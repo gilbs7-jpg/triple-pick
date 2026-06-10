@@ -16,7 +16,7 @@ const PLAYER_SLUGS = {
   lianne_c: 'Lianne Conway',
   mark_b: 'Mark Bentley',
   kieran_s: 'Kieran Smyth',
-  amelia_a: 'Amelia Brown',  // Replaced lila_g / Lila Gilbert
+  amelia_a: 'Amelia Wood',  // Replaced lila_g / Lila Gilbert
   gemma_d: 'Gemma D'
 };
 
@@ -197,7 +197,7 @@ export default function App() {
             { p1: { name: 'Jona Moore', score: null, picks: [] }, p2: { name: 'Adam Brand', score: null, picks: [] } },
             { p1: { name: 'Jamie Brown', score: null, picks: [] }, p2: { name: 'Richard Lee', score: null, picks: [] } },
             { p1: { name: 'Lianne Conway', score: null, picks: [] }, p2: { name: 'Mark Bentley', score: null, picks: [] } },
-            { p1: { name: 'Kieran Smyth', score: null, picks: [] }, p2: { name: 'Amelia Brown', score: null, picks: [] } }
+            { p1: { name: 'Kieran Smyth', score: null, picks: [] }, p2: { name: 'Amelia Wood', score: null, picks: [] } }
           ]
         });
       } finally {
