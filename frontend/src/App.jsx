@@ -22,22 +22,26 @@ const PLAYER_SLUGS = {
 
 const MATCH_FIXTURES_POOL = {
   GW1: [
-    { id: 'g1_1', home: { id: 'usa', name: 'USA', flag: '🇺🇸' }, away: { id: 'can', name: 'Canada', flag: '🇨🇦' }, date: 'Friday, 12 June', time: '20:00 BST' },
-    { id: 'g1_2', home: { id: 'mex', name: 'Mexico', flag: '🇲🇽' }, away: { id: 'ita', name: 'Italy', flag: '🇮🇹' }, date: 'Saturday, 13 June', time: '15:00 BST' },
-    { id: 'g1_3', home: { id: 'arg', name: 'Argentina', flag: '🇦🇷' }, away: { id: 'jpn', name: 'Japan', flag: '🇯🇵' }, date: 'Saturday, 13 June', time: '18:00 BST' },
-    { id: 'g1_4', home: { id: 'fra', name: 'France', flag: '🇫🇷' }, away: { id: 'bel', name: 'Belgium', flag: '🇧🇪' }, date: 'Sunday, 14 June', time: '14:00 BST' },
-    { id: 'g1_5', home: { id: 'eng', name: 'England', flag: '🏴󠁧󠁢󠁥󠁮󠁧󠁿' }, away: { id: 'cro', name: 'Croatia', flag: '🇭🇷' }, date: 'Sunday, 14 June', time: '17:00 BST' },
-    { id: 'g1_6', home: { id: 'esp', name: 'Spain', flag: '🇪🇸' }, away: { id: 'mar', name: 'Morocco', flag: '🇲🇦' }, date: 'Monday, 15 June', time: '20:00 BST' },
-    { id: 'g1_7', home: { id: 'ger', name: 'Germany', flag: '🇩🇪' }, away: { id: 'ned', name: 'Netherlands', flag: '🇳🇱' }, date: 'Tuesday, 16 June', time: '16:00 BST' },
-    { id: 'bra', home: { id: 'bra', name: 'Brazil', flag: '🇧🇷' }, away: { id: 'por', name: 'Portugal', flag: '🇵🇹' }, date: 'Wednesday, 17 June', time: '19:00 BST' }
+    { id: 'g1_1', home: { id: 'mex', name: 'Mexico', flag: '🇲🇽' }, away: { id: 'rsa', name: 'South Africa', flag: '🇿🇦' }, date: 'Thu, 11 June', time: '20:00 BST' },
+    { id: 'g1_2', home: { id: 'kor', name: 'South Korea', flag: '🇰🇷' }, away: { id: 'cze', name: 'Czechia', flag: '🇨🇿' }, date: 'Fri, 12 June', time: '03:00 BST' },
+    { id: 'g1_3', home: { id: 'can', name: 'Canada', flag: '🇨🇦' }, away: { id: 'bih', name: 'Bosnia & Herz.', flag: '🇧🇦' }, date: 'Fri, 12 June', time: '20:00 BST' },
+    { id: 'g1_4', home: { id: 'usa', name: 'USA', flag: '🇺🇸' }, away: { id: 'par', name: 'Paraguay', flag: '🇵🇾' }, date: 'Sat, 13 June', time: '02:00 BST' },
+    { id: 'g1_5', home: { id: 'qat', name: 'Qatar', flag: '🇶🇦' }, away: { id: 'sui', name: 'Switzerland', flag: '🇨🇭' }, date: 'Sat, 13 June', time: '20:00 BST' },
+    { id: 'g1_6', home: { id: 'bra', name: 'Brazil', flag: '🇧🇷' }, away: { id: 'mar', name: 'Morocco', flag: '🇲🇦' }, date: 'Sat, 13 June', time: '23:00 BST' },
+    { id: 'g1_7', home: { id: 'hai', name: 'Haiti', flag: '🇭🇹' }, away: { id: 'sco', name: 'Scotland', flag: '🏴󠁧󠁢󠁳󠁣󠁴󠁿' }, date: 'Sun, 14 June', time: '02:00 BST' },
+    { id: 'g1_8', home: { id: 'aus', name: 'Australia', flag: '🇦🇺' }, away: { id: 'tur', name: 'Türkiye', flag: '🇹🇷' }, date: 'Sun, 14 June', time: '05:00 BST' },
+    { id: 'g1_9', home: { id: 'ger', name: 'Germany', flag: '🇩🇪' }, away: { id: 'cuw', name: 'Curaçao', flag: '🇨🇼' }, date: 'Sun, 14 June', time: '18:00 BST' },
+    { id: 'g1_10', home: { id: 'ned', name: 'Netherlands', flag: '🇳🇱' }, away: { id: 'jpn', name: 'Japan', flag: '🇯🇵' }, date: 'Sun, 14 June', time: '21:00 BST' },
+    { id: 'g1_11', home: { id: 'civ', name: 'Ivory Coast', flag: '🇨🇮' }, away: { id: 'ecu', name: 'Ecuador', flag: '🇪🇨' }, date: 'Mon, 15 June', time: '00:00 BST' },
+    { id: 'g1_12', home: { id: 'swe', name: 'Sweden', flag: '🇸🇪' }, away: { id: 'tun', name: 'Tunisia', flag: '🇹🇳' }, date: 'Mon, 15 June', time: '03:00 BST' }
   ],
   GW4: [
-    { id: 'g4_1', home: { id: 'usa', name: 'USA', flag: '🇺🇸' }, away: { id: 'arg', name: 'Argentina', flag: '🇦🇷' }, date: 'Sunday, 28 June', time: '17:00 BST' },
-    { id: 'g4_2', home: { id: 'mex', name: 'Mexico', flag: '🇲🇽' }, away: { id: 'fra', name: 'France', flag: '🇫🇷' }, date: 'Sunday, 28 June', time: '21:00 BST' },
-    { id: 'g4_3', home: { id: 'eng', name: 'England', flag: '🏴󠁧󠁢󠁥󠁮󠁧󠁿' }, away: { id: 'esp', name: 'Spain', flag: '🇪🇸' }, date: 'Monday, 29 June', time: '16:00 BST' },
-    { id: 'g4_4', home: { id: 'ger', name: 'Germany', flag: '🇩🇪' }, away: { id: 'mar', name: 'Morocco', flag: '🇲🇦' }, date: 'Monday, 29 June', time: '20:00 BST' },
-    { id: 'g4_5', home: { id: 'ned', name: 'Netherlands', flag: '🇳🇱' }, away: { id: 'por', name: 'Portugal', flag: '🇵🇹' }, date: 'Tuesday, 30 June', time: '18:00 BST' },
-    { id: 'g4_6', home: { id: 'cro', name: 'Croatia', flag: '🇭🇷' }, away: { id: 'bra', name: 'Brazil', flag: '🇧🇷' }, date: 'Wednesday, 1 July', time: '19:00 BST' }
+    { id: 'g4_1', home: { id: 'usa', name: 'USA', flag: '🇺🇸' }, away: { id: 'arg', name: 'Argentina', flag: '🇦🇷' }, date: 'Sun, 28 June', time: '17:00 BST' },
+    { id: 'g4_2', home: { id: 'mex', name: 'Mexico', flag: '🇲🇽' }, away: { id: 'fra', name: 'France', flag: '🇫🇷' }, date: 'Sun, 28 June', time: '21:00 BST' },
+    { id: 'g4_3', home: { id: 'eng', name: 'England', flag: '🏴󠁧󠁢󠁥󠁮󠁧󠁿' }, away: { id: 'esp', name: 'Spain', flag: '🇪🇸' }, date: 'Mon, 29 June', time: '16:00 BST' },
+    { id: 'g4_4', home: { id: 'ger', name: 'Germany', flag: '🇩🇪' }, away: { id: 'mar', name: 'Morocco', flag: '🇲🇦' }, date: 'Mon, 29 June', time: '20:00 BST' },
+    { id: 'g4_5', home: { id: 'ned', name: 'Netherlands', flag: '🇳🇱' }, away: { id: 'por', name: 'Portugal', flag: '🇵🇹' }, date: 'Tue, 30 June', time: '18:00 BST' },
+    { id: 'g4_6', home: { id: 'cro', name: 'Croatia', flag: '🇭🇷' }, away: { id: 'bra', name: 'Brazil', flag: '🇧🇷' }, date: 'Wed, 1 July', time: '19:00 BST' }
   ]
 };
 
@@ -60,6 +64,7 @@ export default function App() {
   const [tournamentFixtures, setTournamentFixtures] = useState({});
   const [isLoadingScores, setIsLoadingScores] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
   // Cloud Network Synchronizer
   const handleFinalizeAndSave = async () => {
@@ -118,8 +123,6 @@ export default function App() {
     }
   };
 
-  const [timeLeft, setTimeLeft] = useState({ days: 1, hours: 23, minutes: 14, seconds: 45 });
-
   // Read URL params or load Dev mode bypass on environment mount
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -166,18 +169,29 @@ export default function App() {
     fetchLiveTournamentData();
   }, []);
 
-  // Countdown clock loop
+  // Dynamic Real-Time Countdown Clock connected to Thursday June 11, 20:00 BST
   useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeLeft(prev => {
-        if (prev.seconds > 0) return { ...prev, seconds: prev.seconds - 1 };
-        if (prev.minutes > 0) return { ...prev, minutes: prev.minutes - 1, seconds: 59 };
-        if (prev.hours > 0) return { ...prev, hours: prev.hours - 1, minutes: 59, seconds: 59 };
-        if (prev.days > 0) return { ...prev, days: prev.days - 1, hours: 23, minutes: 59, seconds: 59 };
-        clearInterval(timer);
-        return prev;
-      });
-    }, 1000);
+    const targetDate = new Date('2026-06-11T20:00:00+01:00').getTime();
+
+    const updateTimer = () => {
+      const now = new Date().getTime();
+      const difference = targetDate - now;
+
+      if (difference <= 0) {
+        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+        setIsFormLocked(true); // Auto-lock if deadline has passed
+      } else {
+        setTimeLeft({
+          days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+          hours: Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+          minutes: Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60)),
+          seconds: Math.floor((difference % (1000 * 60)) / 1000)
+        });
+      }
+    };
+
+    updateTimer(); // Initial call to avoid layout shift delay
+    const timer = setInterval(updateTimer, 1000);
     return () => clearInterval(timer);
   }, []);
 
@@ -275,8 +289,10 @@ export default function App() {
                 </div>
 
                 <div className="bg-[#FF9500]/10 border border-[#FF9500]/20 rounded-xl px-3 py-1.5 flex items-center gap-2 self-start sm:self-center shadow-xs">
-                  <span className="w-1.5 h-1.5 bg-[#FF9500] rounded-full animate-pulse" />
-                  <span className="text-[10px] font-black tracking-wide text-[#FF9500] uppercase">Lockout In:</span>
+                  <span className={`w-1.5 h-1.5 rounded-full ${timeLeft.days === 0 && timeLeft.hours === 0 && timeLeft.minutes === 0 ? 'bg-[#FF3B30]' : 'bg-[#FF9500] animate-pulse'}`} />
+                  <span className={`text-[10px] font-black tracking-wide uppercase ${timeLeft.days === 0 && timeLeft.hours === 0 && timeLeft.minutes === 0 ? 'text-[#FF3B30]' : 'text-[#FF9500]'}`}>
+                    {timeLeft.days === 0 && timeLeft.hours === 0 && timeLeft.minutes === 0 && timeLeft.seconds === 0 ? 'Locked' : 'Lockout In:'}
+                  </span>
                   <span className="font-mono text-xs font-bold text-[#1C1C1E]">
                     {timeLeft.days}d {timeLeft.hours}h {timeLeft.minutes}m {timeLeft.seconds}s
                   </span>
@@ -341,7 +357,7 @@ export default function App() {
               </div>
 
               <button
-                disabled={isSaving}
+                disabled={isSaving || (timeLeft.days === 0 && timeLeft.hours === 0 && timeLeft.minutes === 0 && timeLeft.seconds === 0)}
                 onClick={handleFinalizeAndSave}
                 className={`w-full py-2.5 rounded-xl font-semibold text-xs transition-all flex items-center justify-center gap-2 ${
                   isFormLocked 
@@ -498,32 +514,92 @@ export default function App() {
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {tournamentFixtures[activeRound]?.map((fixture, index) => {
-                    const highlightMatch = fixture.p1.name === currentUser || fixture.p2.name === currentUser;
-                    const isScored = fixture.p1.score !== undefined && fixture.p1.score !== null;
+                    const isUserMatch = fixture.p1.name === currentUser || fixture.p2.name === currentUser;
 
                     return (
-                      <div key={index} className={`p-4 rounded-xl border flex flex-col justify-between space-y-3 transition-all ${highlightMatch ? 'border-[#007AFF]/30 bg-[#007AFF]/5 font-bold' : 'border-[#E5E5EA] bg-white'}`}>
-                        <div className="flex justify-between items-center">
-                          <div>
-                            <span className="text-xs font-bold text-[#1C1C1E]">{fixture.p1.name}</span>
-                            <div className="flex flex-wrap gap-1 mt-1">
-                              {fixture.p1.picks?.map((p, i) => <span key={i} className="text-[9px] font-semibold text-[#636366] bg-[#F2F2F7] px-1.5 py-0.5 rounded">{p}</span>)}
+                      <div 
+                        key={index} 
+                        className={`border rounded-xl p-4 transition-all relative overflow-hidden flex flex-col justify-between ${
+                          isUserMatch 
+                            ? 'border-[#007AFF] bg-[#007AFF]/5 shadow-sm ring-1 ring-[#007AFF]/20' 
+                            : 'border-[#E5E5EA] bg-white hover:border-[#D1D1D6]'
+                        }`}
+                      >
+                        {isUserMatch && (
+                          <div className="absolute top-0 left-0 right-0 h-[2px] bg-[#007AFF]" />
+                        )}
+
+                        <div className="flex justify-between items-center mb-3">
+                          <span className="text-[9px] font-black tracking-wider text-[#8E8E93] uppercase font-mono">
+                            Match {index + 1} {isUserMatch && '• YOUR ARENA'}
+                          </span>
+                          {isUserMatch && (
+                            <span className="bg-[#007AFF] text-white text-[8px] font-black px-1.5 py-0.5 rounded uppercase tracking-wide">
+                              Live Target
+                            </span>
+                          )}
+                        </div>
+
+                        <div className="space-y-2.5">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2 max-w-[70%]">
+                              <div className={`w-1.5 h-1.5 rounded-full ${isUserMatch && fixture.p1.name === currentUser ? 'bg-[#007AFF]' : 'bg-transparent'}`} />
+                              <p className={`text-xs truncate ${fixture.p1.name === currentUser ? 'font-bold text-black' : 'font-medium text-[#1C1C1E]'}`}>
+                                {fixture.p1.name}
+                              </p>
+                            </div>
+                            <span className="font-mono text-sm font-bold text-[#1C1C1E]">
+                              {fixture.p1.score !== null ? fixture.p1.score : '—'}
+                            </span>
+                          </div>
+
+                          <div className="h-[1px] bg-[#F2F2F7]" />
+
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2 max-w-[70%]">
+                              <div className={`w-1.5 h-1.5 rounded-full ${isUserMatch && fixture.p2.name === currentUser ? 'bg-[#007AFF]' : 'bg-transparent'}`} />
+                              <p className={`text-xs truncate ${fixture.p2.name === currentUser ? 'font-bold text-black' : 'font-medium text-[#1C1C1E]'}`}>
+                                {fixture.p2.name}
+                              </p>
+                            </div>
+                            <span className="font-mono text-sm font-bold text-[#1C1C1E]">
+                              {fixture.p2.score !== null ? fixture.p2.score : '—'}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="mt-4 pt-3 border-t border-dashed border-[#E5E5EA] grid grid-cols-2 gap-2 text-[10px]">
+                          <div className="space-y-1 border-r border-[#F2F2F7] pr-1">
+                            <span className="text-[8px] font-bold text-[#8E8E93] uppercase tracking-tight block">Picks:</span>
+                            <div className="flex flex-wrap gap-1">
+                              {fixture.p1.picks && fixture.p1.picks.length > 0 ? (
+                                fixture.p1.picks.map((pick, pIdx) => (
+                                  <span key={pIdx} title={pick.name} className={`px-1.5 py-0.5 rounded font-sans text-[11px] bg-[#F2F2F7] ${pick.isArmband ? 'ring-1 ring-[#FF9500] font-bold' : ''}`}>
+                                    {pick.flag}
+                                  </span>
+                                ))
+                              ) : (
+                                <span className="text-[10px] italic text-[#AEAEB2]">No sheet submitted</span>
+                              )}
                             </div>
                           </div>
-                          <span className="font-mono text-base font-black text-[#1C1C1E]">{isScored ? fixture.p1.score : '-'}</span>
-                        </div>
-                        <div className="border-t border-[#E5E5EA]/50 relative my-1">
-                          <span className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white px-1.5 text-[8px] font-bold text-[#AEAEB2] border border-[#E5E5EA] rounded-full">VS</span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <div>
-                            <span className="text-xs font-bold text-[#1C1C1E]">{fixture.p2.name}</span>
-                            <div className="flex flex-wrap gap-1 mt-1">
-                              {fixture.p2.picks?.map((p, i) => <span key={i} className="text-[9px] font-semibold text-[#636366] bg-[#F2F2F7] px-1.5 py-0.5 rounded">{p}</span>)}
+
+                          <div className="space-y-1 pl-1">
+                            <span className="text-[8px] font-bold text-[#8E8E93] uppercase tracking-tight block">Picks:</span>
+                            <div className="flex flex-wrap gap-1">
+                              {fixture.p2.picks && fixture.p2.picks.length > 0 ? (
+                                fixture.p2.picks.map((pick, pIdx) => (
+                                  <span key={pIdx} title={pick.name} className={`px-1.5 py-0.5 rounded font-sans text-[11px] bg-[#F2F2F7] ${pick.isArmband ? 'ring-1 ring-[#FF9500] font-bold' : ''}`}>
+                                    {pick.flag}
+                                  </span>
+                                ))
+                              ) : (
+                                <span className="text-[10px] italic text-[#AEAEB2]">No sheet submitted</span>
+                              )}
                             </div>
                           </div>
-                          <span className="font-mono text-base font-black text-[#1C1C1E]">{isScored ? fixture.p2.score : '-'}</span>
                         </div>
+
                       </div>
                     );
                   })}
