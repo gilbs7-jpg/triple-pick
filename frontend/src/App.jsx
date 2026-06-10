@@ -9,7 +9,7 @@ const ROUNDS = ['GW1', 'GW2', 'GW3', 'GW4', 'GW5', 'GW6', 'GW7'];
 // Map URL safe slugs to the exact display names in your system
 const PLAYER_SLUGS = {
   jona_m: 'Jona Moore',
-  you: 'Jason Gilbert',
+  you: 'Jason Gilber',
   adam_b: 'Adam Brand',
   jamie_b: 'Jamie Brown',
   richard_l: 'Richard Lee',
