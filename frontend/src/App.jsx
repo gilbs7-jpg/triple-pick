@@ -16,8 +16,8 @@ const PLAYER_SLUGS = {
   lianne_c: 'Lianne Conway',
   mark_b: 'Mark Bentley',
   kieran_s: 'Kieran Smyth',
-  amelia_a: 'Amelia Gilbert',  // Replaced lila_g / Lila Gilbert
-  jack_g: 'Jack Gilbert'
+  amelia_a: 'Amelia Brown',  // Replaced lila_g / Lila Gilbert
+  jack_g: 'Gemma D'
 };
 
 const MATCH_FIXTURES_POOL = {
