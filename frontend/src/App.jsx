@@ -17,7 +17,7 @@ const PLAYER_SLUGS = {
   mark_b: 'Mark Bentley',
   kieran_s: 'Kieran Smyth',
   amelia_a: 'Amelia Brown',  // Replaced lila_g / Lila Gilbert
-  jack_g: 'Gemma D'
+  gemma_d: 'Gemma D'
 };
 
 const MATCH_FIXTURES_POOL = {
@@ -193,11 +193,11 @@ export default function App() {
         
         setTournamentFixtures({
           GW1: [
-            { p1: { name: 'Jason Gilbert', score: null, picks: [] }, p2: { name: 'Jack Gilbert', score: null, picks: [] } },
+            { p1: { name: 'Jason Gilbert', score: null, picks: [] }, p2: { name: 'Gemma D', score: null, picks: [] } },
             { p1: { name: 'Jona Moore', score: null, picks: [] }, p2: { name: 'Adam Brand', score: null, picks: [] } },
             { p1: { name: 'Jamie Brown', score: null, picks: [] }, p2: { name: 'Richard Lee', score: null, picks: [] } },
             { p1: { name: 'Lianne Conway', score: null, picks: [] }, p2: { name: 'Mark Bentley', score: null, picks: [] } },
-            { p1: { name: 'Kieran Smyth', score: null, picks: [] }, p2: { name: 'Amelia Gilbert', score: null, picks: [] } }
+            { p1: { name: 'Kieran Smyth', score: null, picks: [] }, p2: { name: 'Amelia Brown', score: null, picks: [] } }
           ]
         });
       } finally {
