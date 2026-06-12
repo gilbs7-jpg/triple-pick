@@ -110,17 +110,33 @@ function calcPlayerScore(picks, results) {
   }, 0);
 }
 
+// Returns true if this player's nominated captain pick resulted in a win.
+// Used to award the +1 league point bonus independently of the H2H result —
+// the bonus applies even if the player loses their fixture.
+function captainWon(picks, results) {
+  if (!picks || picks.length === 0) return false;
+  const captainPick = picks.find(p => p.isArmband);
+  if (!captainPick) return false;
+  return (results?.[captainPick.id] ?? null) === 'W';
+}
+
 function calcRoundH2H(allPicks, results, gwKey) {
   const fixtures = H2H_FIXTURES[gwKey] || [];
   const out = {};
   fixtures.forEach(([p1, p2]) => {
-    const score1 = calcPlayerScore(allPicks?.[gwKey]?.[p1]?.picks ?? null, results);
-    const score2 = calcPlayerScore(allPicks?.[gwKey]?.[p2]?.picks ?? null, results);
+    const picks1 = allPicks?.[gwKey]?.[p1]?.picks ?? null;
+    const picks2 = allPicks?.[gwKey]?.[p2]?.picks ?? null;
+    const score1 = calcPlayerScore(picks1, results);
+    const score2 = calcPlayerScore(picks2, results);
     const f1 = score1 === null, f2 = score2 === null;
     let h1 = 0, h2 = 0;
     if (!f1 && !f2) { if (score1 > score2) { h1=3; } else if (score2 > score1) { h2=3; } else { h1=1; h2=1; } }
     else if (f1 && !f2) { h2=3; }
     else if (!f1 && f2) { h1=3; }
+    // Captain bonus: +1 league point if this player's captain pick won,
+    // regardless of the fixture outcome (carries through even on a loss/forfeit)
+    if (!f1 && captainWon(picks1, results)) h1 += 1;
+    if (!f2 && captainWon(picks2, results)) h2 += 1;
     out[p1] = { h2hPts:h1, score:score1??0, forfeited:f1 };
     out[p2] = { h2hPts:h2, score:score2??0, forfeited:f2 };
   });
@@ -380,6 +396,37 @@ export default function App() {
     }
   };
 
+  // ── Share picks ──────────────────────────────────────────────────────────
+  const handleSharePicks = async () => {
+    // Find this player's H2H opponent for the active round
+    const fixture = (H2H_FIXTURES[activeRound] || []).find(
+      ([p1, p2]) => p1 === currentUser || p2 === currentUser
+    );
+    const opponent = fixture
+      ? fixture[0] === currentUser ? fixture[1] : fixture[0]
+      : null;
+
+    const flags = selections.map((s, idx) => {
+      if (!s) return '';
+      return armbandSlot === idx ? `${s.flag}Ⓒ` : s.flag;
+    }).join(' ');
+
+    const opponentLine = opponent ? `\nFacing ${opponent} this round — bring it on! 👊` : '';
+    const text = `⚽ My Triple Pick World Cup '26 picks for ${activeRound}:\n${flags}${opponentLine}\n\nPlay at: https://triple-pick.vercel.app`;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: 'Triple Pick World Cup \'26', text });
+      } catch (e) {
+        // User cancelled — do nothing
+      }
+    } else {
+      // Fallback: copy to clipboard
+      await navigator.clipboard.writeText(text);
+      alert('Copied to clipboard — paste into WhatsApp, Facebook or X!');
+    }
+  };
+
   // ── Pick helpers ──────────────────────────────────────────────────────────
   const historicalUsage = {};
   const getUsageMetrics = (teamId) => (historicalUsage[teamId]||0) + selections.filter(s => s?.id===teamId).length;
@@ -553,6 +600,14 @@ export default function App() {
                   : isFormLocked ? '🔓 Reopen Sheets for Adjustments'
                   : '🔒 Finalize Sheet Configuration'}
               </button>
+
+              {/* Share button — only shown once picks are locked */}
+              {isFormLocked && selections.every(s => s !== null) && (
+                <button onClick={handleSharePicks}
+                  className="w-full mt-2 py-2.5 rounded-xl font-semibold text-xs transition-all flex items-center justify-center gap-2 bg-[#F2F2F7] text-[#1C1C1E] hover:bg-[#E5E5EA] border border-[#E5E5EA]">
+                  📣 Share My Picks
+                </button>
+              )}
             </section>
 
             {/* Rules */}
