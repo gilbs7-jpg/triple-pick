@@ -173,6 +173,7 @@ export default function App() {
   const [currentUser,    setCurrentUser]    = useState(null);
   const [invalidUser,    setInvalidUser]    = useState(false);
   const [showRules,      setShowRules]      = useState(false);
+  const [exampleStep,    setExampleStep]    = useState(1);
   const [selectedSlot,   setSelectedSlot]   = useState(0);
   const [selections,     setSelections]     = useState([null,null,null]);
   const [armbandSlot,    setArmbandSlot]    = useState(0);
@@ -624,13 +625,155 @@ export default function App() {
                 <div className="p-5 border-t border-[#E5E5EA] bg-white space-y-4 text-xs text-[#636366] leading-relaxed">
                   <div><h4 className="font-bold text-[#1C1C1E] mb-1">1. Triple Pick</h4><p>Select exactly 3 nations from the active match pool each round.</p></div>
                   <div><h4 className="font-bold text-[#1C1C1E] mb-1">2. 2-Cap Limit</h4><p>Any nation can only be selected <span className="font-bold text-black">up to 2 times</span> across the entire tournament.</p></div>
-                  <div><h4 className="font-bold text-[#1C1C1E] mb-1">3. Armband Ⓒ</h4><p>Nominate one pick as captain. If that nation <strong>wins</strong>, you earn a <span className="font-bold text-[#34C759]">+1 bonus</span>. A draw does not trigger the bonus.</p></div>
+                  <div><h4 className="font-bold text-[#1C1C1E] mb-1">3. Armband Ⓒ</h4><p>Nominate one pick as captain. If that nation <strong>wins</strong>, you earn a <span className="font-bold text-[#34C759]">+1 bonus point</span> toward your gameweek score. A draw does not trigger the bonus.</p></div>
                   <div><h4 className="font-bold text-[#1C1C1E] mb-1">4. Head-to-Head</h4>
+                    <p className="mb-1">Your gameweek score is compared against your opponent's to decide the fixture:</p>
                     <ul className="list-disc list-inside mt-1 ml-2 space-y-0.5 font-mono text-[11px]">
                       <li><span className="font-bold text-[#34C759]">3 pts</span> — Win &nbsp;<span className="font-bold text-[#8E8E93]">1 pt</span> — Draw &nbsp;<span className="font-bold text-[#FF3B30]">0 pts</span> — Loss</li>
                     </ul>
                   </div>
-                  <div><h4 className="font-bold text-[#1C1C1E] mb-1">5. Forfeit</h4><p>Miss the deadline and you score 0. Your opponent gets 3 league points automatically.</p></div>
+                  <div>
+                    <h4 className="font-bold text-[#1C1C1E] mb-1">5. Captain bonus league point</h4>
+                    <p className="mb-2">If your Armband captain <strong>wins their match</strong>, you get an extra <span className="font-bold text-[#34C759]">+1 league point</span> &#8212; on top of whatever you earned from the fixture result. This applies <strong>even if you lose your fixture.</strong></p>
+                    <div className="bg-[#F2F2F7] rounded-lg overflow-hidden">
+                      <table className="w-full text-[11px] font-mono">
+                        <thead>
+                          <tr className="text-[#8E8E93] border-b border-[#E5E5EA]">
+                            <th className="text-left py-1.5 px-2 font-bold">Fixture</th>
+                            <th className="text-left py-1.5 px-2 font-bold">Captain</th>
+                            <th className="text-right py-1.5 px-2 font-bold">League pts</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr className="border-b border-[#E5E5EA]"><td className="py-1.5 px-2">Win</td><td className="py-1.5 px-2">Wins</td><td className="text-right py-1.5 px-2 font-bold text-[#34C759]">3 + 1 = 4</td></tr>
+                          <tr className="border-b border-[#E5E5EA]"><td className="py-1.5 px-2">Win</td><td className="py-1.5 px-2">Doesn't win</td><td className="text-right py-1.5 px-2">3</td></tr>
+                          <tr className="border-b border-[#E5E5EA]"><td className="py-1.5 px-2">Draw</td><td className="py-1.5 px-2">Wins</td><td className="text-right py-1.5 px-2 font-bold text-[#34C759]">1 + 1 = 2</td></tr>
+                          <tr className="border-b border-[#E5E5EA]"><td className="py-1.5 px-2">Loss</td><td className="py-1.5 px-2">Wins</td><td className="text-right py-1.5 px-2 font-bold text-[#34C759]">0 + 1 = 1</td></tr>
+                          <tr><td className="py-1.5 px-2">Loss</td><td className="py-1.5 px-2">Doesn't win</td><td className="text-right py-1.5 px-2">0</td></tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+
+                  {/* Interactive worked example */}
+                  <div>
+                    <h4 className="font-bold text-[#1C1C1E] mb-2">Worked example</h4>
+                    <div className="flex items-center gap-3 mb-3">
+                      <span className="text-[10px] font-bold text-[#8E8E93] uppercase">Step</span>
+                      <input type="range" min="1" max="4" step="1" value={exampleStep}
+                        onChange={(e) => setExampleStep(parseInt(e.target.value))}
+                        className="flex-1 accent-[#007AFF]" />
+                      <span className="text-[11px] font-bold text-[#007AFF] min-w-[88px] text-right">
+                        {exampleStep===1 && '1. The picks'}
+                        {exampleStep===2 && '2. GW score'}
+                        {exampleStep===3 && '3. The fixture'}
+                        {exampleStep===4 && '4. League pts'}
+                      </span>
+                    </div>
+
+                    {exampleStep === 1 && (
+                      <div>
+                        <p className="mb-2">Each player picks 3 nations. One is nominated Armband captain (Ⓒ).</p>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                          <div className="bg-white border border-[#E5E5EA] rounded-xl p-3">
+                            <p className="font-bold text-[#1C1C1E] mb-2">Jason</p>
+                            <div className="space-y-1.5">
+                              <div className="flex items-center gap-2"><span className="text-lg">🇺🇸</span><span>USA</span></div>
+                              <div className="flex items-center gap-2"><span className="text-lg">🇩🇪</span><span>Germany</span><span className="text-[9px] px-1.5 py-0.5 rounded bg-[#FF9500]/10 text-[#FF9500] font-bold">Ⓒ</span></div>
+                              <div className="flex items-center gap-2"><span className="text-lg">🇧🇷</span><span>Brazil</span></div>
+                            </div>
+                          </div>
+                          <div className="bg-white border border-[#E5E5EA] rounded-xl p-3">
+                            <p className="font-bold text-[#1C1C1E] mb-2">Gemma</p>
+                            <div className="space-y-1.5">
+                              <div className="flex items-center gap-2"><span className="text-lg">🇦🇺</span><span>Australia</span><span className="text-[9px] px-1.5 py-0.5 rounded bg-[#FF9500]/10 text-[#FF9500] font-bold">Ⓒ</span></div>
+                              <div className="flex items-center gap-2"><span className="text-lg">🇧🇷</span><span>Brazil</span></div>
+                              <div className="flex items-center gap-2"><span className="text-lg">🇭🇹</span><span>Haiti</span></div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {exampleStep === 2 && (
+                      <div>
+                        <p className="mb-2">Each result earns points: Win = 3, Draw = 1, Loss = 0. The captain Ⓒ adds +1 to the gameweek score if their nation wins.</p>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                          <div className="bg-white border border-[#E5E5EA] rounded-xl p-3">
+                            <p className="font-bold text-[#1C1C1E] mb-2">Jason</p>
+                            <div className="space-y-1.5">
+                              <div className="flex items-center justify-between"><div className="flex items-center gap-2"><span className="text-lg">🇺🇸</span><span>USA</span><span className="text-[#AEAEB2]">Won</span></div><span className="font-bold">3</span></div>
+                              <div className="flex items-center justify-between"><div className="flex items-center gap-2"><span className="text-lg">🇩🇪</span><span>Germany</span><span className="text-[9px] px-1.5 py-0.5 rounded bg-[#FF9500]/10 text-[#FF9500] font-bold">Ⓒ</span><span className="text-[#AEAEB2]">Won</span></div><span className="font-bold">3+1</span></div>
+                              <div className="flex items-center justify-between"><div className="flex items-center gap-2"><span className="text-lg">🇧🇷</span><span>Brazil</span><span className="text-[#AEAEB2]">Drew</span></div><span className="font-bold">1</span></div>
+                            </div>
+                            <div className="border-t border-dashed border-[#E5E5EA] mt-2 pt-2 flex justify-between items-baseline">
+                              <span className="text-[#8E8E93]">Gameweek score</span><span className="text-lg font-bold text-[#1C1C1E]">8</span>
+                            </div>
+                          </div>
+                          <div className="bg-white border border-[#E5E5EA] rounded-xl p-3">
+                            <p className="font-bold text-[#1C1C1E] mb-2">Gemma</p>
+                            <div className="space-y-1.5">
+                              <div className="flex items-center justify-between"><div className="flex items-center gap-2"><span className="text-lg">🇦🇺</span><span>Australia</span><span className="text-[9px] px-1.5 py-0.5 rounded bg-[#FF9500]/10 text-[#FF9500] font-bold">Ⓒ</span><span className="text-[#AEAEB2]">Won</span></div><span className="font-bold">3+1</span></div>
+                              <div className="flex items-center justify-between"><div className="flex items-center gap-2"><span className="text-lg">🇧🇷</span><span>Brazil</span><span className="text-[#AEAEB2]">Drew</span></div><span className="font-bold">1</span></div>
+                              <div className="flex items-center justify-between"><div className="flex items-center gap-2"><span className="text-lg">🇭🇹</span><span>Haiti</span><span className="text-[#AEAEB2]">Lost</span></div><span className="font-bold">0</span></div>
+                            </div>
+                            <div className="border-t border-dashed border-[#E5E5EA] mt-2 pt-2 flex justify-between items-baseline">
+                              <span className="text-[#8E8E93]">Gameweek score</span><span className="text-lg font-bold text-[#1C1C1E]">5</span>
+                            </div>
+                          </div>
+                        </div>
+                        <p className="text-[11px] text-[#AEAEB2] mt-2">Jason scores 8, Gemma scores 5 &#8212; Jason has the higher gameweek score this round.</p>
+                      </div>
+                    )}
+
+                    {exampleStep === 3 && (
+                      <div>
+                        <p className="mb-2">Jason and Gemma are head-to-head opponents this round. The higher gameweek score wins the fixture.</p>
+                        <div className="bg-white border border-[#E5E5EA] rounded-xl p-4">
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="font-bold text-[#1C1C1E]">Jason</span>
+                            <span className="text-2xl font-bold">8</span>
+                          </div>
+                          <div className="text-center text-[#AEAEB2] my-1">vs</div>
+                          <div className="flex items-center justify-between mb-3">
+                            <span className="font-bold text-[#1C1C1E]">Gemma</span>
+                            <span className="text-2xl font-bold">5</span>
+                          </div>
+                          <div className="border-t border-[#E5E5EA] pt-2 flex items-center gap-2">
+                            <span className="text-[#34C759]">🏆</span>
+                            <span>Jason wins the fixture &#8212; 8 beats 5. Gemma loses.</span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {exampleStep === 4 && (
+                      <div>
+                        <p className="mb-2">League points combine the fixture result with each player's captain bonus &#8212; calculated independently, then added together.</p>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-2">
+                          <div className="bg-[#F2F2F7] rounded-lg p-3">
+                            <p className="text-[#8E8E93] mb-1">Jason &#8212; won fixture</p>
+                            <div className="flex items-baseline gap-1.5"><span className="text-[#8E8E93]">Fixture win</span><span className="font-bold">3</span></div>
+                            <div className="flex items-baseline gap-1.5"><span className="text-[#8E8E93]">Captain Ⓒ won</span><span className="font-bold">+1</span></div>
+                            <div className="border-t border-[#E5E5EA] mt-1.5 pt-1.5">
+                              <span className="text-xl font-bold">4</span> <span className="text-[#8E8E93]">league pts</span>
+                            </div>
+                          </div>
+                          <div className="bg-[#F2F2F7] rounded-lg p-3">
+                            <p className="text-[#8E8E93] mb-1">Gemma &#8212; lost fixture</p>
+                            <div className="flex items-baseline gap-1.5"><span className="text-[#8E8E93]">Fixture loss</span><span className="font-bold">0</span></div>
+                            <div className="flex items-baseline gap-1.5"><span className="text-[#8E8E93]">Captain Ⓒ won</span><span className="font-bold">+1</span></div>
+                            <div className="border-t border-[#E5E5EA] mt-1.5 pt-1.5">
+                              <span className="text-xl font-bold text-[#34C759]">1</span> <span className="text-[#8E8E93]">league pt</span>
+                            </div>
+                          </div>
+                        </div>
+                        <p className="text-[11px] text-[#AEAEB2]">Even though Gemma lost the fixture, her captain (Australia) won &#8212; so she still banks 1 league point. That bonus is hers regardless of the result.</p>
+                      </div>
+                    )}
+                  </div>
+
+                  <div><h4 className="font-bold text-[#1C1C1E] mb-1">6. Forfeit</h4><p>Miss the deadline and you score 0. Your opponent gets 3 league points automatically. No captain bonus is possible without picks.</p></div>
                   <div className="bg-[#F2F2F7] p-3 rounded-xl border border-[#E5E5EA]">
                     <span className="font-bold text-[#1C1C1E] block mb-0.5">⚠️ Deadline</span>
                     Picks lock 1 hour before the first match of each round. No changes after that.
