@@ -41,20 +41,36 @@ const H2H_FIXTURES = {
 };
 
 // ── TLA → FLAG EMOJI ──────────────────────────────────────────────────────────
-// Static reference data (country → flag never changes). This is the only
-// hardcoded fixture-related data — actual fixtures come live from the API.
+// Static reference data covering all 48 World Cup 2026 nations.
+// Keyed by football-data.org TLA codes. Country→flag never changes, so this is
+// the only hardcoded fixture-related data — actual fixtures come live from the API.
 const TLA_TO_FLAG = {
-  MEX:'🇲🇽', RSA:'🇿🇦', KOR:'🇰🇷', CZE:'🇨🇿', CAN:'🇨🇦', BIH:'🇧🇦',
-  USA:'🇺🇸', PAR:'🇵🇾', QAT:'🇶🇦', SUI:'🇨🇭', BRA:'🇧🇷', MAR:'🇲🇦',
-  HAI:'🇭🇹', SCO:'🏴󠁧󠁢󠁳󠁣󠁴󠁿', AUS:'🇦🇺', TUR:'🇹🇷', GER:'🇩🇪', CUW:'🇨🇼',
-  NED:'🇳🇱', JPN:'🇯🇵', CIV:'🇨🇮', ECU:'🇪🇨', SWE:'🇸🇪', TUN:'🇹🇳',
-  ARG:'🇦🇷', FRA:'🇫🇷', ENG:'🏴󠁧󠁢󠁥󠁮󠁧󠁿', ESP:'🇪🇸', POR:'🇵🇹', CRO:'🇭🇷',
-  BEL:'🇧🇪', EGY:'🇪🇬', IRN:'🇮🇷', NZL:'🇳🇿', CPV:'🇨🇻', KSA:'🇸🇦',
-  URU:'🇺🇾', GHA:'🇬🇭', PAN:'🇵🇦', COL:'🇨🇴', SEN:'🇸🇳', NOR:'🇳🇴',
-  POL:'🇵🇱', NGA:'🇳🇬', JOR:'🇯🇴', UZB:'🇺🇿', RSA2:'🇿🇦', AUT:'🇦🇹',
-  // fallback handled in code for anything missing
+  // Hosts
+  USA:'🇺🇸', MEX:'🇲🇽', CAN:'🇨🇦',
+  // Europe (16)
+  ENG:'🏴󠁧󠁢󠁥󠁮󠁧󠁿', FRA:'🇫🇷', CRO:'🇭🇷', NOR:'🇳🇴', POR:'🇵🇹', GER:'🇩🇪',
+  NED:'🇳🇱', SUI:'🇨🇭', SCO:'🏴󠁧󠁢󠁳󠁣󠁴󠁿', ESP:'🇪🇸', AUT:'🇦🇹', BEL:'🇧🇪',
+  BIH:'🇧🇦', SWE:'🇸🇪', TUR:'🇹🇷', CZE:'🇨🇿',
+  // South America (6)
+  ARG:'🇦🇷', BRA:'🇧🇷', COL:'🇨🇴', ECU:'🇪🇨', PAR:'🇵🇾', URU:'🇺🇾',
+  // Africa (9)
+  MAR:'🇲🇦', RSA:'🇿🇦', TUN:'🇹🇳', ALG:'🇩🇿', EGY:'🇪🇬', GHA:'🇬🇭',
+  CIV:'🇨🇮', SEN:'🇸🇳', CPV:'🇨🇻',
+  // Asia (8)
+  JPN:'🇯🇵', KOR:'🇰🇷', IRN:'🇮🇷', AUS:'🇦🇺', SAU:'🇸🇦', QAT:'🇶🇦',
+  JOR:'🇯🇴', UZB:'🇺🇿',
+  // CONCACAF (3 non-host)
+  PAN:'🇵🇦', HAI:'🇭🇹', CUW:'🇨🇼',
+  // Oceania (1)
+  NZL:'🇳🇿',
+  // Common alternate codes football-data.org may use
+  KSA:'🇸🇦', // Saudi Arabia alt
+  IRR:'🇮🇷', // Iran alt
+  TRK:'🇹🇷', // Türkiye alt
+  NLD:'🇳🇱', // Netherlands alt
+  SVK:'🇸🇰', SRB:'🇷🇸', // safety extras in case of playoff entrants
 };
-const flagFor = (tla) => TLA_TO_FLAG[tla] || '🏳️';
+const flagFor = (tla) => (tla && TLA_TO_FLAG[tla.toUpperCase()]) || '🏳️';
 
 // Format an ISO UTC date to a friendly BST string + time
 function formatFixtureDate(utcDate) {
