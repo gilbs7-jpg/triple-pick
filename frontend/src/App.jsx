@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 
 // ── JSONBIN CONFIG ────────────────────────────────────────────────────────────
 const JSONBIN_PICKS_ID = "6a289e9dda38895dfea3718d";
@@ -161,7 +162,135 @@ function buildLeagueTable(allPicks, allResults) {
   return Object.values(table).sort((a,b) => b.h2hPts-a.h2hPts || b.totalScore-a.totalScore || b.winsSelected-a.winsSelected);
 }
 
-// Compute the deadline (ms) for a gameweek from its cached fixtures:
+// Build cumulative league points per player per gameweek, for the performance chart.
+// Returns [{ gw:'GW1', 'Jason Gilbert':4, 'Gemma D':1, ... }, ...]
+function buildPerformanceData(allPicks, allResults) {
+  const cumulative = {};
+  ALL_PLAYERS.forEach(p => { cumulative[p] = 0; });
+  const rows = [];
+  ROUNDS.forEach(gw => {
+    const results = allResults?.[gw];
+    if (!results) return; // only include calculated gameweeks
+    const h2h = calcRoundH2H(allPicks, results, gw);
+    Object.entries(h2h).forEach(([player, data]) => {
+      if (cumulative[player] !== undefined) cumulative[player] += data.h2hPts;
+    });
+    const row = { gw: ROUND_SHORT[gw] };
+    ALL_PLAYERS.forEach(p => { row[p] = cumulative[p]; });
+    rows.push(row);
+  });
+  return rows;
+}
+
+// Compute fun-stat awards from picks + results across all calculated gameweeks.
+// Returns { captainFantastic:{name,value}, crystalBall:{...}, ... } or null if no data.
+function buildAwards(allPicks, allResults) {
+  const calculatedGws = ROUNDS.filter(gw => allResults?.[gw]);
+  if (calculatedGws.length === 0) return null;
+
+  const stat = {};
+  ALL_PLAYERS.forEach(p => {
+    stat[p] = {
+      captainWins: 0,      // captain pick won
+      captainLosses: 0,    // captain pick did not win (and player didn't forfeit)
+      outrightWins: 0,     // any pick that won
+      uniquePicks: 0,      // picks nobody else made that gw
+      bestGw: null,        // highest single gw score
+      gwScores: [],        // all gw scores
+      oneeptLosses: 0,     // fixtures lost by exactly 1
+      forfeits: 0,         // missed deadlines
+    };
+  });
+
+  calculatedGws.forEach(gw => {
+    const results = allResults[gw];
+    const h2h = calcRoundH2H(allPicks, results, gw);
+
+    // count how many players picked each nation this gw (for uniqueness)
+    const pickCounts = {};
+    ALL_PLAYERS.forEach(p => {
+      (allPicks?.[gw]?.[p]?.picks ?? []).forEach(pick => {
+        pickCounts[pick.id] = (pickCounts[pick.id] || 0) + 1;
+      });
+    });
+
+    ALL_PLAYERS.forEach(p => {
+      const picks = allPicks?.[gw]?.[p]?.picks ?? [];
+      const data = h2h[p];
+      if (!picks.length) {
+        if (data?.forfeited) stat[p].forfeits++;
+        return;
+      }
+      // captain
+      const cap = picks.find(pk => pk.isArmband);
+      if (cap) {
+        if (results[cap.id] === 'W') stat[p].captainWins++;
+        else stat[p].captainLosses++;
+      }
+      // outright wins + uniqueness
+      picks.forEach(pick => {
+        if (results[pick.id] === 'W') stat[p].outrightWins++;
+        if (pickCounts[pick.id] === 1) stat[p].uniquePicks++;
+      });
+      // gw score
+      const score = calcPlayerScore(picks, results);
+      if (score !== null) {
+        stat[p].gwScores.push(score);
+        if (stat[p].bestGw === null || score > stat[p].bestGw) stat[p].bestGw = score;
+      }
+    });
+
+    // one-point losses: examine each H2H pair
+    (H2H_FIXTURES[gw] || []).forEach(([p1, p2]) => {
+      const s1 = calcPlayerScore(allPicks?.[gw]?.[p1]?.picks ?? null, results);
+      const s2 = calcPlayerScore(allPicks?.[gw]?.[p2]?.picks ?? null, results);
+      if (s1 !== null && s2 !== null) {
+        if (s1 - s2 === 1) stat[p2].oneeptLosses++;
+        else if (s2 - s1 === 1) stat[p1].oneeptLosses++;
+      }
+    });
+  });
+
+  // helper: pick the player maximising a value (returns {name, value} or null if all zero)
+  const leader = (getVal, opts = {}) => {
+    let best = null;
+    ALL_PLAYERS.forEach(p => {
+      const v = getVal(stat[p]);
+      if (v === null || v === undefined) return;
+      if (best === null || (opts.min ? v < best.value : v > best.value)) {
+        best = { name: p, value: v };
+      }
+    });
+    return best;
+  };
+
+  // consistency: smallest spread (best-worst), only for players with 2+ gameweeks
+  const consistency = () => {
+    let best = null;
+    ALL_PLAYERS.forEach(p => {
+      const s = stat[p].gwScores;
+      if (s.length < 2) return;
+      const spread = Math.max(...s) - Math.min(...s);
+      if (best === null || spread < best.value) best = { name: p, value: spread };
+    });
+    return best;
+  };
+
+  return {
+    captainFantastic: leader(s => s.captainWins),
+    crystalBall:      leader(s => s.outrightWins),
+    maverick:         leader(s => s.uniquePicks),
+    banker:           leader(s => s.bestGw),
+    consistent:       consistency(),
+    heartbreaker:     leader(s => s.oneeptLosses),
+    forfeitKing:      leader(s => s.forfeits),
+    captainChaos:     leader(s => s.captainLosses),
+  };
+}
+
+// Distinct colors for chart lines
+const CHART_COLORS = ['#007AFF','#FF3B30','#34C759','#FF9500','#5856D6','#AF52DE','#FF2D55','#5AC8FA','#FFCC00','#8E8E93'];
+
 // 1 hour before the earliest kickoff. Returns null if no fixtures cached.
 function deadlineFromFixtures(fixtures) {
   if (!fixtures || fixtures.length === 0) return null;
@@ -1000,10 +1129,106 @@ export default function App() {
                 </table>
               </div>
             </section>
+
+            {/* Performance Chart */}
+            {(() => {
+              const perfData = buildPerformanceData(allPicks, allResults);
+              if (perfData.length === 0) {
+                return (
+                  <section className="bg-white rounded-2xl border border-[#E5E5EA] p-5 shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
+                    <h3 className="text-xs font-bold text-[#8E8E93] uppercase tracking-wider mb-2">Performance Tracker</h3>
+                    <p className="text-xs text-[#8E8E93] italic">The race chart appears here once the first gameweek has been scored.</p>
+                  </section>
+                );
+              }
+              return (
+                <section className="bg-white rounded-2xl border border-[#E5E5EA] p-5 shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
+                  <h3 className="text-xs font-bold text-[#8E8E93] uppercase tracking-wider mb-1">📈 Performance Tracker</h3>
+                  <p className="text-[11px] text-[#8E8E93] mb-4">Cumulative league points across the tournament. Your line is highlighted.</p>
+                  <div style={{ width: '100%', height: 280 }}>
+                    <ResponsiveContainer>
+                      <LineChart data={perfData} margin={{ top: 5, right: 10, left: -20, bottom: 5 }}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#F2F2F7" />
+                        <XAxis dataKey="gw" tick={{ fontSize: 10, fill: '#8E8E93' }} />
+                        <YAxis tick={{ fontSize: 10, fill: '#8E8E93' }} allowDecimals={false} />
+                        <Tooltip contentStyle={{ fontSize: 11, borderRadius: 8, border: '1px solid #E5E5EA' }} />
+                        {ALL_PLAYERS.map((player, i) => {
+                          const isMe = player === currentUser;
+                          return (
+                            <Line key={player} type="monotone" dataKey={player}
+                              stroke={CHART_COLORS[i % CHART_COLORS.length]}
+                              strokeWidth={isMe ? 3.5 : 1.5}
+                              strokeOpacity={isMe ? 1 : 0.35}
+                              dot={false}
+                              activeDot={{ r: isMe ? 5 : 3 }} />
+                          );
+                        })}
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </div>
+                  <div className="flex flex-wrap gap-x-3 gap-y-1 mt-3 justify-center">
+                    {ALL_PLAYERS.map((player, i) => (
+                      <div key={player} className="flex items-center gap-1">
+                        <span className="w-2 h-2 rounded-full" style={{ background: CHART_COLORS[i % CHART_COLORS.length], opacity: player===currentUser ? 1 : 0.4 }} />
+                        <span className={`text-[9px] ${player===currentUser ? 'font-bold text-[#1C1C1E]' : 'text-[#8E8E93]'}`}>{player}</span>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              );
+            })()}
+
+            {/* Fun Stats / Awards */}
+            {(() => {
+              const awards = buildAwards(allPicks, allResults);
+              const AWARD_DEFS = [
+                { key:'captainFantastic', emoji:'🧢', title:'Captain Fantastic', desc:'Most winning captain picks',  suffix:'wins' },
+                { key:'crystalBall',      emoji:'🔮', title:'Crystal Ball',      desc:'Most outright wins picked',   suffix:'wins' },
+                { key:'maverick',         emoji:'🃏', title:'The Maverick',       desc:'Most picks no one else made', suffix:'unique' },
+                { key:'banker',           emoji:'💰', title:'Banker',             desc:'Highest single gameweek score', suffix:'pts' },
+                { key:'consistent',       emoji:'📊', title:'Mr Consistent',      desc:'Smallest gap, best to worst GW', suffix:'spread' },
+                { key:'heartbreaker',     emoji:'💔', title:'Heartbreaker',       desc:'Most fixtures lost by 1 point', suffix:'losses' },
+                { key:'forfeitKing',      emoji:'🥄', title:'Wooden Spoon',       desc:'Most missed deadlines',       suffix:'forfeits' },
+                { key:'captainChaos',     emoji:'🌪️', title:'Captain Chaos',      desc:'Worst armband luck',          suffix:'fails' },
+              ];
+              return (
+                <section className="bg-white rounded-2xl border border-[#E5E5EA] p-5 shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
+                  <h3 className="text-xs font-bold text-[#8E8E93] uppercase tracking-wider mb-1">🏅 Hall of Fame</h3>
+                  <p className="text-[11px] text-[#8E8E93] mb-4">Fun awards from across the tournament so far.</p>
+                  {!awards ? (
+                    <p className="text-xs text-[#8E8E93] italic">Awards unlock once the first gameweek has been scored.</p>
+                  ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      {AWARD_DEFS.map(def => {
+                        const winner = awards[def.key];
+                        const hasWinner = winner && winner.value > 0;
+                        return (
+                          <div key={def.key} className="flex items-center gap-3 p-3 rounded-xl border border-[#E5E5EA] bg-[#F2F2F7]/40">
+                            <span className="text-2xl flex-shrink-0">{def.emoji}</span>
+                            <div className="min-w-0 flex-1">
+                              <p className="text-xs font-bold text-[#1C1C1E]">{def.title}</p>
+                              <p className="text-[10px] text-[#8E8E93] truncate">{def.desc}</p>
+                            </div>
+                            <div className="text-right flex-shrink-0">
+                              {hasWinner ? (
+                                <>
+                                  <p className={`text-xs font-bold ${winner.name===currentUser ? 'text-[#007AFF]' : 'text-[#1C1C1E]'}`}>{winner.name}</p>
+                                  <p className="text-[10px] text-[#8E8E93] font-mono">{winner.value} {def.suffix}</p>
+                                </>
+                              ) : (
+                                <p className="text-[10px] text-[#AEAEB2] italic">TBD</p>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </section>
+              );
+            })()}
           </div>
         )}
-
-        {/* ════════ ADMIN ════════ */}
         {currentTab === 'admin' && isAdmin && (
           <div className="space-y-6">
             <div className="flex gap-1 flex-wrap">
