@@ -7,27 +7,12 @@ const JSONBIN_API_KEY  = "$2a$10$SM58O3uX4Dttskq/9geD5OytFCpgoclTLo8BWMo6gvk4QBQ
 const PICKS_URL        = `https://api.jsonbin.io/v3/b/${JSONBIN_PICKS_ID}`;
 const STATE_URL        = `https://api.jsonbin.io/v3/b/${JSONBIN_STATE_ID}`;
 const ROUNDS           = ['GW1','GW2','GW3','GW4','GW5','GW6','GW7'];
+const ROUND_LABELS     = { GW1:'Gameweek 1', GW2:'Gameweek 2', GW3:'Gameweek 3', GW4:'Gameweek 4', GW5:'Gameweek 5', GW6:'Gameweek 6', GW7:'Gameweek 7' };
+const ROUND_SHORT      = { GW1:'GW 1', GW2:'GW 2', GW3:'GW 3', GW4:'GW 4', GW5:'GW 5', GW6:'GW 6', GW7:'GW 7' };
 const ADMIN_USER       = 'Jason Gilbert';
 
-// GW deadlines in UTC (BST = UTC+1, so 20:00 BST = 19:00 UTC)
-const GW_DEADLINES = {
-  GW1: new Date('2026-06-11T19:00:00Z').getTime(),
-  GW2: new Date('2026-06-18T15:00:00Z').getTime(),
-  GW3: new Date('2026-06-24T19:00:00Z').getTime(),
-  GW4: new Date('2026-06-28T16:00:00Z').getTime(),
-  GW5: new Date('2026-07-04T15:00:00Z').getTime(),
-  GW6: new Date('2026-07-08T19:00:00Z').getTime(),
-  GW7: new Date('2026-07-12T19:00:00Z').getTime(),
-};
-
-// Maps GW round to football-data.org matchday number
-const GW_TO_MATCHDAY = {
-  GW1: 1, GW2: 2, GW3: 3,   // Group stage MD1-3
-  GW4: 4,                     // Round of 16
-  GW5: 5,                     // Quarter-finals
-  GW6: 6,                     // Semi-finals
-  GW7: 7,                     // Final
-};
+// Maps gameweek to football-data.org matchday number
+const GW_TO_MATCHDAY = { GW1:1, GW2:2, GW3:3, GW4:4, GW5:5, GW6:6, GW7:7 };
 
 // ── PLAYERS ───────────────────────────────────────────────────────────────────
 const PLAYER_SLUGS = {
@@ -55,57 +40,33 @@ const H2H_FIXTURES = {
   GW7: [['Jason Gilbert','Jona Moore'],['Lianne Conway','Jamie Brown'],['Adam Brand','Gemma D'],['Amelia Wood','Richard Lee'],['Mark Bentley','Kieran Smyth']],
 };
 
-// ── MATCH FIXTURES ────────────────────────────────────────────────────────────
-const MATCH_FIXTURES_POOL = {
-  GW1: [
-    { id:'g1_1',  home:{id:'mex',name:'Mexico',       flag:'🇲🇽'}, away:{id:'rsa',name:'South Africa', flag:'🇿🇦'}, date:'Thu, 11 June', time:'20:00 BST'},
-    { id:'g1_2',  home:{id:'kor',name:'South Korea',  flag:'🇰🇷'}, away:{id:'cze',name:'Czechia',      flag:'🇨🇿'}, date:'Fri, 12 June', time:'03:00 BST'},
-    { id:'g1_3',  home:{id:'can',name:'Canada',       flag:'🇨🇦'}, away:{id:'bih',name:'Bosnia & Herz.',flag:'🇧🇦'}, date:'Fri, 12 June', time:'20:00 BST'},
-    { id:'g1_4',  home:{id:'usa',name:'USA',          flag:'🇺🇸'}, away:{id:'par',name:'Paraguay',     flag:'🇵🇾'}, date:'Sat, 13 June', time:'02:00 BST'},
-    { id:'g1_5',  home:{id:'qat',name:'Qatar',        flag:'🇶🇦'}, away:{id:'sui',name:'Switzerland',  flag:'🇨🇭'}, date:'Sat, 13 June', time:'20:00 BST'},
-    { id:'g1_6',  home:{id:'bra',name:'Brazil',       flag:'🇧🇷'}, away:{id:'mar',name:'Morocco',      flag:'🇲🇦'}, date:'Sat, 13 June', time:'23:00 BST'},
-    { id:'g1_7',  home:{id:'hai',name:'Haiti',        flag:'🇭🇹'}, away:{id:'sco',name:'Scotland',     flag:'🏴󠁧󠁢󠁳󠁣󠁴󠁿'}, date:'Sun, 14 June', time:'02:00 BST'},
-    { id:'g1_8',  home:{id:'aus',name:'Australia',    flag:'🇦🇺'}, away:{id:'tur',name:'Türkiye',      flag:'🇹🇷'}, date:'Sun, 14 June', time:'05:00 BST'},
-    { id:'g1_9',  home:{id:'ger',name:'Germany',      flag:'🇩🇪'}, away:{id:'cuw',name:'Curaçao',      flag:'🇨🇼'}, date:'Sun, 14 June', time:'18:00 BST'},
-    { id:'g1_10', home:{id:'ned',name:'Netherlands',  flag:'🇳🇱'}, away:{id:'jpn',name:'Japan',        flag:'🇯🇵'}, date:'Sun, 14 June', time:'21:00 BST'},
-    { id:'g1_11', home:{id:'civ',name:'Ivory Coast',  flag:'🇨🇮'}, away:{id:'ecu',name:'Ecuador',      flag:'🇪🇨'}, date:'Mon, 15 June', time:'00:00 BST'},
-    { id:'g1_12', home:{id:'swe',name:'Sweden',       flag:'🇸🇪'}, away:{id:'tun',name:'Tunisia',      flag:'🇹🇳'}, date:'Mon, 15 June', time:'03:00 BST'},
-  ],
-  GW2: [
-    { id:'g2_1',  home:{id:'cze',name:'Czechia',      flag:'🇨🇿'}, away:{id:'rsa',name:'South Africa', flag:'🇿🇦'}, date:'Thu, 18 June', time:'17:00 BST'},
-    { id:'g2_2',  home:{id:'sui',name:'Switzerland',  flag:'🇨🇭'}, away:{id:'bih',name:'Bosnia & Herz.',flag:'🇧🇦'}, date:'Thu, 18 June', time:'20:00 BST'},
-    { id:'g2_3',  home:{id:'can',name:'Canada',       flag:'🇨🇦'}, away:{id:'qat',name:'Qatar',        flag:'🇶🇦'}, date:'Thu, 18 June', time:'23:00 BST'},
-    { id:'g2_4',  home:{id:'mex',name:'Mexico',       flag:'🇲🇽'}, away:{id:'kor',name:'South Korea',  flag:'🇰🇷'}, date:'Fri, 19 June', time:'02:00 BST'},
-    { id:'g2_5',  home:{id:'usa',name:'USA',          flag:'🇺🇸'}, away:{id:'aus',name:'Australia',    flag:'🇦🇺'}, date:'Fri, 19 June', time:'20:00 BST'},
-    { id:'g2_6',  home:{id:'sco',name:'Scotland',     flag:'🏴󠁧󠁢󠁳󠁣󠁴󠁿'}, away:{id:'mar',name:'Morocco',      flag:'🇲🇦'}, date:'Fri, 19 June', time:'23:00 BST'},
-    { id:'g2_7',  home:{id:'bra',name:'Brazil',       flag:'🇧🇷'}, away:{id:'hai',name:'Haiti',        flag:'🇭🇹'}, date:'Sat, 20 June', time:'01:30 BST'},
-    { id:'g2_8',  home:{id:'tur',name:'Türkiye',      flag:'🇹🇷'}, away:{id:'par',name:'Paraguay',     flag:'🇵🇾'}, date:'Sat, 20 June', time:'05:00 BST'},
-    { id:'g2_9',  home:{id:'ned',name:'Netherlands',  flag:'🇳🇱'}, away:{id:'swe',name:'Sweden',       flag:'🇸🇪'}, date:'Sat, 20 June', time:'18:00 BST'},
-    { id:'g2_10', home:{id:'ger',name:'Germany',      flag:'🇩🇪'}, away:{id:'civ',name:'Ivory Coast',  flag:'🇨🇮'}, date:'Sat, 20 June', time:'21:00 BST'},
-    { id:'g2_11', home:{id:'ecu',name:'Ecuador',      flag:'🇪🇨'}, away:{id:'cuw',name:'Curaçao',      flag:'🇨🇼'}, date:'Sun, 21 June', time:'01:00 BST'},
-    { id:'g2_12', home:{id:'tun',name:'Tunisia',      flag:'🇹🇳'}, away:{id:'jpn',name:'Japan',        flag:'🇯🇵'}, date:'Sun, 21 June', time:'05:00 BST'},
-  ],
-  GW4: [
-    { id:'g4_1', home:{id:'usa',name:'USA',         flag:'🇺🇸'}, away:{id:'arg',name:'Argentina', flag:'🇦🇷'}, date:'Sun, 28 June', time:'17:00 BST'},
-    { id:'g4_2', home:{id:'mex',name:'Mexico',      flag:'🇲🇽'}, away:{id:'fra',name:'France',    flag:'🇫🇷'}, date:'Sun, 28 June', time:'21:00 BST'},
-    { id:'g4_3', home:{id:'eng',name:'England',     flag:'🏴󠁧󠁢󠁥󠁮󠁧󠁿'}, away:{id:'esp',name:'Spain',     flag:'🇪🇸'}, date:'Mon, 29 June', time:'16:00 BST'},
-    { id:'g4_4', home:{id:'ger',name:'Germany',     flag:'🇩🇪'}, away:{id:'mar',name:'Morocco',   flag:'🇲🇦'}, date:'Mon, 29 June', time:'20:00 BST'},
-    { id:'g4_5', home:{id:'ned',name:'Netherlands', flag:'🇳🇱'}, away:{id:'por',name:'Portugal',  flag:'🇵🇹'}, date:'Tue, 30 June', time:'18:00 BST'},
-    { id:'g4_6', home:{id:'cro',name:'Croatia',     flag:'🇭🇷'}, away:{id:'bra',name:'Brazil',    flag:'🇧🇷'}, date:'Wed, 1 July',  time:'19:00 BST'},
-  ],
+// ── TLA → FLAG EMOJI ──────────────────────────────────────────────────────────
+// Static reference data (country → flag never changes). This is the only
+// hardcoded fixture-related data — actual fixtures come live from the API.
+const TLA_TO_FLAG = {
+  MEX:'🇲🇽', RSA:'🇿🇦', KOR:'🇰🇷', CZE:'🇨🇿', CAN:'🇨🇦', BIH:'🇧🇦',
+  USA:'🇺🇸', PAR:'🇵🇾', QAT:'🇶🇦', SUI:'🇨🇭', BRA:'🇧🇷', MAR:'🇲🇦',
+  HAI:'🇭🇹', SCO:'🏴󠁧󠁢󠁳󠁣󠁴󠁿', AUS:'🇦🇺', TUR:'🇹🇷', GER:'🇩🇪', CUW:'🇨🇼',
+  NED:'🇳🇱', JPN:'🇯🇵', CIV:'🇨🇮', ECU:'🇪🇨', SWE:'🇸🇪', TUN:'🇹🇳',
+  ARG:'🇦🇷', FRA:'🇫🇷', ENG:'🏴󠁧󠁢󠁥󠁮󠁧󠁿', ESP:'🇪🇸', POR:'🇵🇹', CRO:'🇭🇷',
+  BEL:'🇧🇪', EGY:'🇪🇬', IRN:'🇮🇷', NZL:'🇳🇿', CPV:'🇨🇻', KSA:'🇸🇦',
+  URU:'🇺🇾', GHA:'🇬🇭', PAN:'🇵🇦', COL:'🇨🇴', SEN:'🇸🇳', NOR:'🇳🇴',
+  POL:'🇵🇱', NGA:'🇳🇬', JOR:'🇯🇴', UZB:'🇺🇿', RSA2:'🇿🇦', AUT:'🇦🇹',
+  // fallback handled in code for anything missing
 };
-['GW3','GW5','GW6','GW7'].forEach(gw => { if (!MATCH_FIXTURES_POOL[gw]) MATCH_FIXTURES_POOL[gw] = []; });
+const flagFor = (tla) => TLA_TO_FLAG[tla] || '🏳️';
 
-// ── TLA → our nation ID mapping ───────────────────────────────────────────────
-// football-data.org uses TLA codes; we map them to our internal ids
-const TLA_TO_ID = {
-  mex:'mex', rsa:'rsa', kor:'kor', cze:'cze', can:'can', bih:'bih',
-  usa:'usa', par:'par', qat:'qat', sui:'sui', bra:'bra', mar:'mar',
-  hai:'hai', sco:'sco', aus:'aus', tur:'tur', ger:'ger', cuw:'cuw',
-  ned:'ned', jpn:'jpn', civ:'civ', ecu:'ecu', swe:'swe', tun:'tun',
-  // GW4+
-  arg:'arg', fra:'fra', eng:'eng', esp:'esp', por:'por', cro:'cro',
-};
+// Format an ISO UTC date to a friendly BST string + time
+function formatFixtureDate(utcDate) {
+  try {
+    const d = new Date(utcDate);
+    const day  = d.toLocaleDateString('en-GB', { weekday:'short', day:'numeric', month:'short', timeZone:'Europe/London' });
+    const time = d.toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit', timeZone:'Europe/London' });
+    return { date: day, time: `${time} BST` };
+  } catch {
+    return { date: '', time: '' };
+  }
+}
 
 // ── SCORING ENGINE ────────────────────────────────────────────────────────────
 function basePoints(result) {
@@ -124,14 +85,11 @@ function calcPlayerScore(picks, results) {
   }, 0);
 }
 
-// Returns true if this player's nominated captain pick resulted in a win.
-// Used to award the +1 league point bonus independently of the H2H result —
-// the bonus applies even if the player loses their fixture.
 function captainWon(picks, results) {
   if (!picks || picks.length === 0) return false;
-  const captainPick = picks.find(p => p.isArmband);
-  if (!captainPick) return false;
-  return (results?.[captainPick.id] ?? null) === 'W';
+  const cap = picks.find(p => p.isArmband);
+  if (!cap) return false;
+  return (results?.[cap.id] ?? null) === 'W';
 }
 
 function calcRoundH2H(allPicks, results, gwKey) {
@@ -144,7 +102,6 @@ function calcRoundH2H(allPicks, results, gwKey) {
     const score2 = calcPlayerScore(picks2, results);
     const f1 = score1 === null, f2 = score2 === null;
     let h1 = 0, h2 = 0;
-    // outcome = the fixture result before any captain bonus ('W'|'D'|'L')
     let o1 = 'L', o2 = 'L';
     if (!f1 && !f2) {
       if (score1 > score2)      { h1=3; o1='W'; o2='L'; }
@@ -153,9 +110,6 @@ function calcRoundH2H(allPicks, results, gwKey) {
     }
     else if (f1 && !f2) { h2=3; o1='L'; o2='W'; }
     else if (!f1 && f2) { h1=3; o1='W'; o2='L'; }
-    // Captain bonus: +1 league point if this player's captain pick won,
-    // regardless of the fixture outcome (carries through even on a loss).
-    // The bonus affects league points only — NOT the W/D/L fixture record.
     if (!f1 && captainWon(picks1, results)) h1 += 1;
     if (!f2 && captainWon(picks2, results)) h2 += 1;
     out[p1] = { h2hPts:h1, score:score1??0, forfeited:f1, outcome:o1 };
@@ -176,8 +130,6 @@ function buildLeagueTable(allPicks, allResults) {
       table[player].played++;
       table[player].h2hPts    += data.h2hPts;
       table[player].totalScore += data.score;
-      // W/D/L is based on the fixture outcome, not league points
-      // (which now include the captain bonus and can be 2 or 4)
       if (data.outcome==='W') table[player].w++;
       else if (data.outcome==='D') table[player].d++;
       else table[player].l++;
@@ -187,6 +139,15 @@ function buildLeagueTable(allPicks, allResults) {
     });
   });
   return Object.values(table).sort((a,b) => b.h2hPts-a.h2hPts || b.totalScore-a.totalScore || b.winsSelected-a.winsSelected);
+}
+
+// Compute the deadline (ms) for a gameweek from its cached fixtures:
+// 1 hour before the earliest kickoff. Returns null if no fixtures cached.
+function deadlineFromFixtures(fixtures) {
+  if (!fixtures || fixtures.length === 0) return null;
+  const kickoffs = fixtures.map(f => new Date(f.utcDate).getTime()).filter(t => !isNaN(t));
+  if (kickoffs.length === 0) return null;
+  return Math.min(...kickoffs) - 60 * 60 * 1000;
 }
 
 // ── APP ───────────────────────────────────────────────────────────────────────
@@ -201,12 +162,12 @@ export default function App() {
   const [selections,     setSelections]     = useState([null,null,null]);
   const [armbandSlot,    setArmbandSlot]    = useState(0);
   const [isFormLocked,   setIsFormLocked]   = useState(false);
-  const [isLoadingPicks, setIsLoadingPicks] = useState(false);
   const [isSaving,       setIsSaving]       = useState(false);
   const [timeLeft,       setTimeLeft]       = useState({days:0,hours:0,minutes:0,seconds:0});
 
   const [allPicks,       setAllPicks]       = useState({});
   const [allResults,     setAllResults]     = useState({});
+  const [allFixtures,    setAllFixtures]    = useState({}); // { GW1: [ {id,name,flag,...} ], ... }
   const [leagueTable,    setLeagueTable]    = useState([]);
   const [isLoadingData,  setIsLoadingData]  = useState(true);
 
@@ -214,12 +175,26 @@ export default function App() {
   const [roundResults,   setRoundResults]   = useState({});
   const [isCalculating,  setIsCalculating]  = useState(false);
   const [isFetchingAPI,  setIsFetchingAPI]  = useState(false);
-  const [fetchStatus,    setFetchStatus]    = useState(null); // null | 'success' | 'error'
+  const [isFetchingFix,  setIsFetchingFix]  = useState(false);
+  const [fetchStatus,    setFetchStatus]    = useState(null);
   const [fetchMessage,   setFetchMessage]   = useState('');
 
-  const isAdmin        = currentUser === ADMIN_USER;
-  const deadline       = GW_DEADLINES[activeRound] ?? GW_DEADLINES.GW1;
-  const deadlinePassed = Date.now() >= deadline;
+  const isAdmin = currentUser === ADMIN_USER;
+
+  // Deadlines derived from cached fixtures
+  const deadlines = {};
+  ROUNDS.forEach(gw => { deadlines[gw] = deadlineFromFixtures(allFixtures[gw]); });
+  const deadline = deadlines[activeRound];
+  const deadlinePassed = deadline !== null && Date.now() >= deadline;
+
+  // A gameweek is "open" if it's GW1, or the previous gameweek's deadline has passed
+  const isRoundOpen = (gw) => {
+    const idx = ROUNDS.indexOf(gw);
+    if (idx === 0) return true;
+    const prev = ROUNDS[idx-1];
+    const prevDeadline = deadlines[prev];
+    return prevDeadline !== null && Date.now() >= prevDeadline;
+  };
 
   // ── URL param → user ──────────────────────────────────────────────────────
   useEffect(() => {
@@ -241,10 +216,12 @@ export default function App() {
         ]);
         const pd = await pr.json();
         const sd = await sr.json();
-        const picks   = pd.record?.playerPicks ?? {};
-        const results = sd.record?.results      ?? {};
+        const picks    = pd.record?.playerPicks ?? {};
+        const results  = sd.record?.results     ?? {};
+        const fixtures = sd.record?.fixtures    ?? {};
         setAllPicks(picks);
         setAllResults(results);
+        setAllFixtures(fixtures);
         setLeagueTable(buildLeagueTable(picks, results));
         const my = picks?.[activeRound]?.[currentUser];
         if (my?.picks?.length === 3) {
@@ -278,6 +255,7 @@ export default function App() {
       setArmbandSlot(0);
       setIsFormLocked(false);
     }
+    setSelectedSlot(0);
     setRoundResults(allResults?.[activeRound] ?? {});
     setFetchStatus(null);
     setFetchMessage('');
@@ -286,6 +264,7 @@ export default function App() {
   // ── Countdown ─────────────────────────────────────────────────────────────
   useEffect(() => {
     const tick = () => {
+      if (deadline === null) { setTimeLeft({days:0,hours:0,minutes:0,seconds:0}); return; }
       const diff = deadline - Date.now();
       if (diff <= 0) {
         setTimeLeft({days:0,hours:0,minutes:0,seconds:0});
@@ -334,59 +313,85 @@ export default function App() {
     }
   };
 
-  // ── Admin: fetch results from API ─────────────────────────────────────────
-  const handleFetchFromAPI = async () => {
+  // ── Admin: refresh fixtures from API (cache to Bin 2) ─────────────────────
+  const handleRefreshFixtures = async () => {
     const matchday = GW_TO_MATCHDAY[activeRound];
-    if (!matchday) {
-      setFetchStatus('error');
-      setFetchMessage('No matchday mapping for this round.');
-      return;
+    if (!matchday) { setFetchStatus('error'); setFetchMessage('No matchday mapping.'); return; }
+    try {
+      setIsFetchingFix(true);
+      setFetchStatus(null); setFetchMessage('');
+      const res  = await fetch(`/api/results?matchday=${matchday}&mode=fixtures`);
+      const data = await res.json();
+      if (!res.ok) { setFetchStatus('error'); setFetchMessage(data.error || 'Fixture fetch failed.'); return; }
+      if (!data.fixtures || data.fixtures.length === 0) {
+        setFetchStatus('error'); setFetchMessage('No fixtures returned for this matchday yet.'); return;
+      }
+
+      // Build pool: one entry per nation (each match yields 2 selectable nations)
+      const pool = [];
+      data.fixtures.forEach(fx => {
+        const dt = formatFixtureDate(fx.utcDate);
+        pool.push({
+          matchId: fx.matchId,
+          utcDate: fx.utcDate,
+          date: dt.date, time: dt.time,
+          home: { id: fx.homeTeam.tla?.toLowerCase(), tla: fx.homeTeam.tla, name: fx.homeTeam.name, flag: flagFor(fx.homeTeam.tla) },
+          away: { id: fx.awayTeam.tla?.toLowerCase(), tla: fx.awayTeam.tla, name: fx.awayTeam.name, flag: flagFor(fx.awayTeam.tla) },
+        });
+      });
+
+      // Save to Bin 2 under fixtures[gw]
+      const sres = await fetch(STATE_URL, {headers:{'X-Master-Key':JSONBIN_API_KEY}});
+      const sdata = await sres.json();
+      const state = sdata.record || {results:{},fixtures:{},leagueTable:{}};
+      if (!state.fixtures) state.fixtures = {};
+      state.fixtures[activeRound] = pool;
+      await fetch(STATE_URL, {
+        method:'PUT',
+        headers:{'Content-Type':'application/json','X-Master-Key':JSONBIN_API_KEY},
+        body: JSON.stringify(state),
+      });
+
+      setAllFixtures(prev => ({ ...prev, [activeRound]: pool }));
+      const dl = deadlineFromFixtures(pool);
+      const dlStr = dl ? new Date(dl).toLocaleString('en-GB',{timeZone:'Europe/London'}) : 'n/a';
+      setFetchStatus('success');
+      setFetchMessage(`Cached ${pool.length} nations across ${data.fixtures.length} matches. Deadline auto-set to ${dlStr} BST.`);
+    } catch(e) {
+      setFetchStatus('error'); setFetchMessage(`Error: ${e.message}`);
+    } finally {
+      setIsFetchingFix(false);
     }
+  };
+
+  // ── Admin: fetch results from API ─────────────────────────────────────────
+  const handleFetchResults = async () => {
+    const matchday = GW_TO_MATCHDAY[activeRound];
+    if (!matchday) { setFetchStatus('error'); setFetchMessage('No matchday mapping.'); return; }
     try {
       setIsFetchingAPI(true);
-      setFetchStatus(null);
-      setFetchMessage('');
-
+      setFetchStatus(null); setFetchMessage('');
       const res  = await fetch(`/api/results?matchday=${matchday}`);
       const data = await res.json();
-
-      if (!res.ok) {
-        setFetchStatus('error');
-        setFetchMessage(data.error || 'API fetch failed.');
-        return;
-      }
-
+      if (!res.ok) { setFetchStatus('error'); setFetchMessage(data.error || 'API fetch failed.'); return; }
       if (!data.matches || data.matches.length === 0) {
-        setFetchStatus('error');
-        setFetchMessage('No matches returned for this matchday. Matches may not have started yet.');
-        return;
+        setFetchStatus('error'); setFetchMessage('No matches returned. Matches may not have started.'); return;
       }
-
-      // Build results map: { nationId: 'W'|'D'|'L' }
       const fetched = {};
       let mapped = 0;
       data.matches.forEach(match => {
-        const homeId = TLA_TO_ID[match.homeTeam.id];
-        const awayId = TLA_TO_ID[match.awayTeam.id];
+        const homeId = match.homeTeam.tla?.toLowerCase();
+        const awayId = match.awayTeam.tla?.toLowerCase();
         if (homeId && match.homeResult) { fetched[homeId] = match.homeResult; mapped++; }
         if (awayId && match.awayResult) { fetched[awayId] = match.awayResult; mapped++; }
       });
-
       const total    = data.matches.length;
       const finished = data.matches.filter(m => m.status === 'FINISHED').length;
-      const pending  = total - finished;
-
-      // Merge with any existing manual entries — API takes priority for finished matches
       setRoundResults(prev => ({ ...prev, ...fetched }));
-
       setFetchStatus('success');
-      setFetchMessage(
-        `Fetched ${total} matches — ${finished} finished, ${pending} pending. ` +
-        `${mapped} nation results populated. Review below then click Calculate.`
-      );
+      setFetchMessage(`Fetched ${total} matches — ${finished} finished. ${mapped} results populated. Review then Calculate.`);
     } catch(e) {
-      setFetchStatus('error');
-      setFetchMessage(`Fetch error: ${e.message}`);
+      setFetchStatus('error'); setFetchMessage(`Fetch error: ${e.message}`);
     } finally {
       setIsFetchingAPI(false);
     }
@@ -394,12 +399,12 @@ export default function App() {
 
   // ── Admin: calculate round ────────────────────────────────────────────────
   const handleCalculateRound = async () => {
-    if (Object.keys(roundResults).length === 0) { alert('No results to calculate. Fetch from API or enter manually first.'); return; }
+    if (Object.keys(roundResults).length === 0) { alert('No results to calculate. Fetch or enter first.'); return; }
     try {
       setIsCalculating(true);
       const res  = await fetch(STATE_URL, {headers:{'X-Master-Key':JSONBIN_API_KEY}});
       const data = await res.json();
-      const state = data.record || {results:{},leagueTable:{}};
+      const state = data.record || {results:{},fixtures:{},leagueTable:{}};
       if (!state.results) state.results = {};
       state.results[activeRound] = roundResults;
       const newTable = buildLeagueTable(allPicks, state.results);
@@ -411,7 +416,7 @@ export default function App() {
       });
       setAllResults(state.results);
       setLeagueTable(newTable);
-      alert(`✅ ${activeRound} calculated and league table updated!`);
+      alert(`✅ ${ROUND_LABELS[activeRound]} calculated and table updated!`);
     } catch(e) {
       console.error(e);
       alert('Calculation failed — check console.');
@@ -420,40 +425,8 @@ export default function App() {
     }
   };
 
-  // ── Share picks ──────────────────────────────────────────────────────────
-  const handleSharePicks = async () => {
-    // Find this player's H2H opponent for the active round
-    const fixture = (H2H_FIXTURES[activeRound] || []).find(
-      ([p1, p2]) => p1 === currentUser || p2 === currentUser
-    );
-    const opponent = fixture
-      ? fixture[0] === currentUser ? fixture[1] : fixture[0]
-      : null;
-
-    const flags = selections.map((s, idx) => {
-      if (!s) return '';
-      return armbandSlot === idx ? `${s.flag}Ⓒ` : s.flag;
-    }).join(' ');
-
-    const opponentLine = opponent ? `\nFacing ${opponent} this round — bring it on! 👊` : '';
-    const text = `⚽ My Triple Pick World Cup '26 picks for ${activeRound}:\n${flags}${opponentLine}\n\nPlay at: https://triple-pick.vercel.app`;
-
-    if (navigator.share) {
-      try {
-        await navigator.share({ title: 'Triple Pick World Cup \'26', text });
-      } catch (e) {
-        // User cancelled — do nothing
-      }
-    } else {
-      // Fallback: copy to clipboard
-      await navigator.clipboard.writeText(text);
-      alert('Copied to clipboard — paste into WhatsApp, Facebook or X!');
-    }
-  };
-
   // ── Pick helpers ──────────────────────────────────────────────────────────
-  const historicalUsage = {};
-  const getUsageMetrics = (teamId) => (historicalUsage[teamId]||0) + selections.filter(s => s?.id===teamId).length;
+  const getUsageMetrics = (teamId) => selections.filter(s => s?.id===teamId).length;
 
   const handleSelectNation = (nation) => {
     if (isFormLocked) return;
@@ -463,7 +436,7 @@ export default function App() {
       alert(`${nation.name} has reached the 2-cap limit.`); return;
     }
     const updated = [...selections];
-    updated[selectedSlot] = nation;
+    updated[selectedSlot] = { id:nation.id, name:nation.name, flag:nation.flag };
     setSelections(updated);
     if (selectedSlot < 2 && !updated[selectedSlot+1]) setSelectedSlot(selectedSlot+1);
   };
@@ -477,12 +450,27 @@ export default function App() {
     setSelectedSlot(idx);
   };
 
+  // ── Share picks ───────────────────────────────────────────────────────────
+  const handleSharePicks = async () => {
+    const fixture = (H2H_FIXTURES[activeRound] || []).find(([p1,p2]) => p1===currentUser || p2===currentUser);
+    const opponent = fixture ? (fixture[0]===currentUser ? fixture[1] : fixture[0]) : null;
+    const flags = selections.map((s,idx) => s ? (armbandSlot===idx ? `${s.flag}Ⓒ` : s.flag) : '').join(' ');
+    const oppLine = opponent ? `\nFacing ${opponent} this ${ROUND_LABELS[activeRound]} — bring it on! 👊` : '';
+    const text = `⚽ My Triple Pick World Cup '26 picks for ${ROUND_LABELS[activeRound]}:\n${flags}${oppLine}\n\nPlay at: https://triple-pick.vercel.app`;
+    if (navigator.share) {
+      try { await navigator.share({ title:'Triple Pick World Cup \'26', text }); } catch(e) {}
+    } else {
+      await navigator.clipboard.writeText(text);
+      alert('Copied to clipboard — paste into WhatsApp, Facebook or X!');
+    }
+  };
+
   // ── Arena helpers ─────────────────────────────────────────────────────────
   const getPlayerPicksDisplay = (playerName, gw) => {
-    const saved      = allPicks?.[gw]?.[playerName];
-    const gwDead     = GW_DEADLINES[gw] ?? GW_DEADLINES.GW1;
-    const roundClosed = Date.now() >= gwDead;
-    const isJason    = currentUser === ADMIN_USER;
+    const saved = allPicks?.[gw]?.[playerName];
+    const dl = deadlines[gw];
+    const roundClosed = dl !== null && Date.now() >= dl;
+    const isJason = currentUser === ADMIN_USER;
     if (!saved?.picks?.length) return {status:'pending', display:null};
     if (!roundClosed && !isJason) return {status:'submitted', display:null};
     return {status:'revealed', display:saved.picks};
@@ -510,7 +498,8 @@ export default function App() {
     </div>
   );
 
-  const currentRoundMatches = MATCH_FIXTURES_POOL[activeRound] || [];
+  const roundOpen = isRoundOpen(activeRound);
+  const currentPool = allFixtures[activeRound] || [];
 
   return (
     <div className="min-h-screen bg-[#F4F4F9] text-[#1C1C1E] antialiased p-4 md:p-6 font-sans">
@@ -525,7 +514,7 @@ export default function App() {
           <p className="text-[10px] text-[#007AFF] font-bold uppercase tracking-wider mt-0.5">Authenticated Manager: {currentUser}</p>
         </div>
         <div className="bg-[#E5E5EA] p-0.5 rounded-xl flex gap-0.5 w-full sm:w-auto">
-          {[['picks','Strategy Desk'],['league','⚽ Arena & Standings']].map(([tab,label]) => (
+          {[['picks','🎯 Strategy Desk'],['league','⚽ Arena & Standings']].map(([tab,label]) => (
             <button key={tab} onClick={() => setCurrentTab(tab)}
               className={`flex-1 sm:flex-none px-4 py-1.5 text-xs font-semibold rounded-lg transition-all ${currentTab===tab ? 'bg-white text-[#1C1C1E] shadow-sm' : 'text-[#636366]'}`}>
               {label}
@@ -549,88 +538,104 @@ export default function App() {
               <div className="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-[#007AFF] to-[#5AC8FA]" />
               <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-4">
                 <div>
-                  <h2 className="text-xs font-bold text-[#8E8E93] uppercase tracking-wider">Active Configuration Slots</h2>
-                  <p className="text-[11px] text-[#636366] mt-0.5">Modifying sheet for: <span className="font-bold text-black">{currentUser}</span></p>
+                  <h2 className="text-xs font-bold text-[#8E8E93] uppercase tracking-wider">Your Picks — {ROUND_LABELS[activeRound]}</h2>
+                  <p className="text-[11px] text-[#636366] mt-0.5">{currentUser}</p>
                 </div>
                 <div className="bg-[#FF9500]/10 border border-[#FF9500]/20 rounded-xl px-3 py-1.5 flex items-center gap-2 self-start sm:self-center">
                   <span className={`w-1.5 h-1.5 rounded-full ${deadlinePassed ? 'bg-[#FF3B30]' : 'bg-[#FF9500] animate-pulse'}`} />
                   <span className={`text-[10px] font-black uppercase ${deadlinePassed ? 'text-[#FF3B30]' : 'text-[#FF9500]'}`}>
-                    {deadlinePassed ? 'Deadline Passed' : 'Lockout In:'}
+                    {deadline === null ? 'Awaiting fixtures' : deadlinePassed ? 'Deadline Passed' : 'Lockout In:'}
                   </span>
-                  <span className="font-mono text-xs font-bold text-[#1C1C1E]">
-                    {timeLeft.days}d {timeLeft.hours}h {timeLeft.minutes}m {timeLeft.seconds}s
-                  </span>
+                  {deadline !== null && (
+                    <span className="font-mono text-xs font-bold text-[#1C1C1E]">
+                      {timeLeft.days}d {timeLeft.hours}h {timeLeft.minutes}m {timeLeft.seconds}s
+                    </span>
+                  )}
                 </div>
               </div>
 
-              {isFormLocked && !isLoadingPicks && (
+              {isFormLocked && (
                 <div className="mb-4 px-3 py-2 bg-[#34C759]/10 border border-[#34C759]/30 rounded-xl flex items-center gap-2">
                   <span className="text-[#34C759] text-sm">✓</span>
-                  <p className="text-xs font-semibold text-[#34C759]">Picks locked and saved. Click the green button to edit before the deadline.</p>
-                </div>
-              )}
-              {isLoadingPicks && (
-                <div className="mb-4 px-3 py-2 bg-[#007AFF]/10 border border-[#007AFF]/20 rounded-xl">
-                  <p className="text-xs font-mono text-[#007AFF] animate-pulse">Checking for existing picks...</p>
+                  <p className="text-xs font-semibold text-[#34C759]">Picks locked and saved. Tap the green button to edit before the deadline.</p>
                 </div>
               )}
 
+              {/* Gameweek selector */}
               <div className="flex gap-1 mb-4 flex-wrap">
-                {ROUNDS.map(gw => (
-                  <button key={gw} onClick={() => setActiveRound(gw)}
-                    className={`px-3 py-1 text-[10px] font-bold rounded-lg transition-all ${activeRound===gw ? 'bg-[#007AFF] text-white' : 'bg-[#F2F2F7] text-[#636366] hover:bg-[#E5E5EA]'}`}>
-                    {gw}
-                  </button>
-                ))}
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
-                {selections.map((nation, idx) => {
-                  const isActive  = selectedSlot===idx;
-                  const isArmband = armbandSlot===idx;
+                {ROUNDS.map(gw => {
+                  const open = isRoundOpen(gw);
                   return (
-                    <div key={idx} onClick={() => !isFormLocked && setSelectedSlot(idx)}
-                      className={`p-4 rounded-xl border-2 flex flex-col justify-between h-28 transition-all cursor-pointer relative ${isActive ? 'border-[#007AFF] bg-[#007AFF]/5' : 'border-[#E5E5EA] bg-white hover:border-[#D1D1D6]'}`}>
-                      <div className="flex justify-between items-start w-full">
-                        <span className="text-[10px] font-black uppercase text-[#8E8E93]">Slot 0{idx+1}</span>
-                        {nation && !isFormLocked && (
-                          <button onClick={(e) => handleClearSlot(idx,e)} className="text-[10px] font-bold text-[#FF3B30] bg-[#FF3B30]/10 px-2 py-0.5 rounded-md">Clear</button>
-                        )}
-                      </div>
-                      <div className="my-auto flex items-center gap-3">
-                        {nation ? (
-                          <><span className="text-3xl">{nation.flag}</span>
-                          <div><p className="text-sm font-bold text-[#1C1C1E]">{nation.name}</p>
-                          <p className="text-[10px] font-mono text-[#8E8E93]">Caps Used: {getUsageMetrics(nation.id)}/2</p></div></>
-                        ) : <p className="text-xs italic text-[#AEAEB2] font-medium">Click to assign team...</p>}
-                      </div>
-                      <div className="flex items-center justify-between pt-2 border-t border-dashed border-[#E5E5EA]">
-                        <span className="text-[9px] font-bold text-[#8E8E93]">Armband Option</span>
-                        <input type="radio" name="armband" disabled={isFormLocked} checked={isArmband}
-                          onChange={() => setArmbandSlot(idx)} onClick={(e) => e.stopPropagation()}
-                          className="accent-[#007AFF] h-3.5 w-3.5" />
-                      </div>
-                      {isArmband && (
-                        <span className="absolute -top-2.5 -right-2 bg-[#1C1C1E] text-white text-[8px] font-black tracking-wide py-0.5 px-2 rounded-md border border-white">Ⓒ ARMBAND (+1)</span>
-                      )}
-                    </div>
+                    <button key={gw} onClick={() => open && setActiveRound(gw)} disabled={!open}
+                      className={`px-3 py-1 text-[10px] font-bold rounded-lg transition-all ${activeRound===gw ? 'bg-[#007AFF] text-white' : open ? 'bg-[#F2F2F7] text-[#636366] hover:bg-[#E5E5EA]' : 'bg-[#F2F2F7] text-[#C7C7CC] cursor-not-allowed'}`}>
+                      {open ? ROUND_SHORT[gw] : `🔒 ${ROUND_SHORT[gw]}`}
+                    </button>
                   );
                 })}
               </div>
 
-              <button disabled={isSaving||deadlinePassed} onClick={handleFinalizeAndSave}
-                className={`w-full py-2.5 rounded-xl font-semibold text-xs transition-all flex items-center justify-center gap-2 ${isFormLocked ? 'bg-[#34C759] text-white hover:bg-[#28a745]' : 'bg-[#1C1C1E] text-white hover:bg-black disabled:opacity-50'}`}>
-                {isSaving ? <span className="animate-pulse">🌐 Syncing...</span>
-                  : isFormLocked ? '🔓 Reopen Sheets for Adjustments'
-                  : '🔒 Finalize Sheet Configuration'}
-              </button>
+              {!roundOpen ? (
+                <div className="text-center py-8 px-4">
+                  <p className="text-2xl mb-2">🔒</p>
+                  <p className="text-sm font-semibold text-[#1C1C1E]">{ROUND_LABELS[activeRound]} isn't open yet</p>
+                  <p className="text-xs text-[#8E8E93] mt-1">It unlocks automatically once the previous gameweek's deadline passes.</p>
+                </div>
+              ) : currentPool.length === 0 ? (
+                <div className="text-center py-8 px-4">
+                  <p className="text-sm font-semibold text-[#1C1C1E]">Fixtures loading…</p>
+                  <p className="text-xs text-[#8E8E93] mt-1">{isAdmin ? 'Go to Admin → Refresh Fixtures to load this gameweek\'s matches.' : 'The Commissioner is setting up this gameweek. Check back shortly.'}</p>
+                </div>
+              ) : (
+                <>
+                  {/* Slots */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
+                    {selections.map((nation, idx) => {
+                      const isActive  = selectedSlot===idx;
+                      const isArmband = armbandSlot===idx;
+                      return (
+                        <div key={idx} onClick={() => !isFormLocked && setSelectedSlot(idx)}
+                          className={`p-4 rounded-xl border-2 flex flex-col justify-between h-28 transition-all cursor-pointer relative ${isActive ? 'border-[#007AFF] bg-[#007AFF]/5' : 'border-[#E5E5EA] bg-white hover:border-[#D1D1D6]'}`}>
+                          <div className="flex justify-between items-start w-full">
+                            <span className="text-[10px] font-black uppercase text-[#8E8E93]">Slot 0{idx+1}</span>
+                            {nation && !isFormLocked && (
+                              <button onClick={(e) => handleClearSlot(idx,e)} className="text-[10px] font-bold text-[#FF3B30] bg-[#FF3B30]/10 px-2 py-0.5 rounded-md">Clear</button>
+                            )}
+                          </div>
+                          <div className="my-auto flex items-center gap-3">
+                            {nation ? (
+                              <><span className="text-3xl">{nation.flag}</span>
+                              <div><p className="text-sm font-bold text-[#1C1C1E]">{nation.name}</p>
+                              <p className="text-[10px] font-mono text-[#8E8E93]">Caps Used: {getUsageMetrics(nation.id)}/2</p></div></>
+                            ) : <p className="text-xs italic text-[#AEAEB2] font-medium">Click to assign team...</p>}
+                          </div>
+                          <div className="flex items-center justify-between pt-2 border-t border-dashed border-[#E5E5EA]">
+                            <span className="text-[9px] font-bold text-[#8E8E93]">Armband Option</span>
+                            <input type="radio" name="armband" disabled={isFormLocked} checked={isArmband}
+                              onChange={() => setArmbandSlot(idx)} onClick={(e) => e.stopPropagation()}
+                              className="accent-[#007AFF] h-3.5 w-3.5" />
+                          </div>
+                          {isArmband && (
+                            <span className="absolute -top-2.5 -right-2 bg-[#1C1C1E] text-white text-[8px] font-black tracking-wide py-0.5 px-2 rounded-md border border-white">Ⓒ ARMBAND (+1)</span>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
 
-              {/* Share button — only shown once picks are locked */}
-              {isFormLocked && selections.every(s => s !== null) && (
-                <button onClick={handleSharePicks}
-                  className="w-full mt-2 py-2.5 rounded-xl font-semibold text-xs transition-all flex items-center justify-center gap-2 bg-[#F2F2F7] text-[#1C1C1E] hover:bg-[#E5E5EA] border border-[#E5E5EA]">
-                  📣 Share My Picks
-                </button>
+                  <button disabled={isSaving||deadlinePassed} onClick={handleFinalizeAndSave}
+                    className={`w-full py-2.5 rounded-xl font-semibold text-xs transition-all flex items-center justify-center gap-2 ${isFormLocked ? 'bg-[#34C759] text-white hover:bg-[#28a745]' : 'bg-[#1C1C1E] text-white hover:bg-black disabled:opacity-50'}`}>
+                    {isSaving ? <span className="animate-pulse">🌐 Syncing...</span>
+                      : isFormLocked ? '🔓 Reopen Sheets for Adjustments'
+                      : '🔒 Finalize Sheet Configuration'}
+                  </button>
+
+                  {isFormLocked && selections.every(s => s !== null) && (
+                    <button onClick={handleSharePicks}
+                      className="w-full mt-2 py-2.5 rounded-xl font-semibold text-xs transition-all flex items-center justify-center gap-2 bg-[#F2F2F7] text-[#1C1C1E] hover:bg-[#E5E5EA] border border-[#E5E5EA]">
+                      📣 Share My Picks
+                    </button>
+                  )}
+                </>
               )}
             </section>
 
@@ -640,13 +645,29 @@ export default function App() {
                 className="w-full p-4 flex justify-between items-center bg-[#F2F2F7]/50 hover:bg-[#F2F2F7] transition-all text-left">
                 <div className="flex items-center gap-2">
                   <span className="text-sm">📜</span>
-                  <h3 className="text-xs font-black text-[#1C1C1E] uppercase tracking-wider">Rules of the Beautiful Game</h3>
+                  <h3 className="text-xs font-black text-[#1C1C1E] uppercase tracking-wider">How to Play &amp; Rules</h3>
                 </div>
                 <span className="text-xs font-bold text-[#007AFF]">{showRules ? 'Hide ▲' : 'Show ▼'}</span>
               </button>
               {showRules && (
                 <div className="p-5 border-t border-[#E5E5EA] bg-white space-y-4 text-xs text-[#636366] leading-relaxed">
-                  <div><h4 className="font-bold text-[#1C1C1E] mb-1">1. Triple Pick</h4><p>Select exactly 3 nations from the active match pool each round.</p></div>
+
+                  {/* How to play intro */}
+                  <div className="bg-gradient-to-br from-[#007AFF]/5 to-[#5AC8FA]/5 border border-[#007AFF]/15 rounded-xl p-4">
+                    <h4 className="font-black text-[#1C1C1E] mb-2 text-sm">⚽ How to Play</h4>
+                    <p className="mb-2">Triple Pick is a head-to-head game played across the whole World Cup. Here's the idea:</p>
+                    <ul className="space-y-1.5 ml-1">
+                      <li className="flex gap-2"><span>🎯</span><span>Each gameweek you pick <strong>3 nations</strong> from that round's matches.</span></li>
+                      <li className="flex gap-2"><span>🆚</span><span>You're drawn against <strong>one opponent</strong> each gameweek — a different manager every round.</span></li>
+                      <li className="flex gap-2"><span>📊</span><span>Your nations earn points on their results. Add them up for your <strong>gameweek score</strong>.</span></li>
+                      <li className="flex gap-2"><span>🏆</span><span>Beat your opponent's score and you win the fixture — earning <strong>league points</strong>.</span></li>
+                      <li className="flex gap-2"><span>©️</span><span>Nominate one pick as your <strong>captain</strong> for a bonus if they win.</span></li>
+                      <li className="flex gap-2"><span>📈</span><span>League points build up over the tournament. Top of the table after the final wins it all.</span></li>
+                    </ul>
+                    <p className="mt-2 text-[#8E8E93]">It's simple to play, but the captain calls, the 2-cap limit, and who you're drawn against each week make it a proper tactical battle.</p>
+                  </div>
+
+                  <div><h4 className="font-bold text-[#1C1C1E] mb-1">1. Triple Pick</h4><p>Select exactly 3 nations from the active match pool each gameweek.</p></div>
                   <div><h4 className="font-bold text-[#1C1C1E] mb-1">2. 2-Cap Limit</h4><p>Any nation can only be selected <span className="font-bold text-black">up to 2 times</span> across the entire tournament.</p></div>
                   <div><h4 className="font-bold text-[#1C1C1E] mb-1">3. Armband Ⓒ</h4><p>Nominate one pick as captain. If that nation <strong>wins</strong>, you earn a <span className="font-bold text-[#34C759]">+1 bonus point</span> toward your gameweek score. A draw does not trigger the bonus.</p></div>
                   <div><h4 className="font-bold text-[#1C1C1E] mb-1">4. Head-to-Head</h4>
@@ -657,7 +678,7 @@ export default function App() {
                   </div>
                   <div>
                     <h4 className="font-bold text-[#1C1C1E] mb-1">5. Captain bonus league point</h4>
-                    <p className="mb-2">If your Armband captain <strong>wins their match</strong>, you get an extra <span className="font-bold text-[#34C759]">+1 league point</span> &#8212; on top of whatever you earned from the fixture result. This applies <strong>even if you lose your fixture.</strong></p>
+                    <p className="mb-2">If your Armband captain <strong>wins their match</strong>, you get an extra <span className="font-bold text-[#34C759]">+1 league point</span> &#8212; on top of the fixture result. This applies <strong>even if you lose your fixture.</strong></p>
                     <div className="bg-[#F2F2F7] rounded-lg overflow-hidden">
                       <table className="w-full text-[11px] font-mono">
                         <thead>
@@ -678,7 +699,7 @@ export default function App() {
                     </div>
                   </div>
 
-                  {/* Interactive worked example */}
+                  {/* Worked example slider */}
                   <div>
                     <h4 className="font-bold text-[#1C1C1E] mb-2">Worked example</h4>
                     <div className="flex items-center gap-3 mb-3">
@@ -717,10 +738,9 @@ export default function App() {
                         </div>
                       </div>
                     )}
-
                     {exampleStep === 2 && (
                       <div>
-                        <p className="mb-2">Each result earns points: Win = 3, Draw = 1, Loss = 0. The captain Ⓒ adds +1 to the gameweek score if their nation wins.</p>
+                        <p className="mb-2">Win = 3, Draw = 1, Loss = 0. Captain Ⓒ adds +1 to the gameweek score if their nation wins.</p>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                           <div className="bg-white border border-[#E5E5EA] rounded-xl p-3">
                             <p className="font-bold text-[#1C1C1E] mb-2">Jason</p>
@@ -745,53 +765,38 @@ export default function App() {
                             </div>
                           </div>
                         </div>
-                        <p className="text-[11px] text-[#AEAEB2] mt-2">Jason scores 8, Gemma scores 5 &#8212; Jason has the higher gameweek score this round.</p>
+                        <p className="text-[11px] text-[#AEAEB2] mt-2">Jason scores 8, Gemma scores 5.</p>
                       </div>
                     )}
-
                     {exampleStep === 3 && (
                       <div>
-                        <p className="mb-2">Jason and Gemma are head-to-head opponents this round. The higher gameweek score wins the fixture.</p>
+                        <p className="mb-2">Jason and Gemma are head-to-head opponents this gameweek. Higher score wins.</p>
                         <div className="bg-white border border-[#E5E5EA] rounded-xl p-4">
-                          <div className="flex items-center justify-between mb-1">
-                            <span className="font-bold text-[#1C1C1E]">Jason</span>
-                            <span className="text-2xl font-bold">8</span>
-                          </div>
+                          <div className="flex items-center justify-between mb-1"><span className="font-bold text-[#1C1C1E]">Jason</span><span className="text-2xl font-bold">8</span></div>
                           <div className="text-center text-[#AEAEB2] my-1">vs</div>
-                          <div className="flex items-center justify-between mb-3">
-                            <span className="font-bold text-[#1C1C1E]">Gemma</span>
-                            <span className="text-2xl font-bold">5</span>
-                          </div>
-                          <div className="border-t border-[#E5E5EA] pt-2 flex items-center gap-2">
-                            <span className="text-[#34C759]">🏆</span>
-                            <span>Jason wins the fixture &#8212; 8 beats 5. Gemma loses.</span>
-                          </div>
+                          <div className="flex items-center justify-between mb-3"><span className="font-bold text-[#1C1C1E]">Gemma</span><span className="text-2xl font-bold">5</span></div>
+                          <div className="border-t border-[#E5E5EA] pt-2 flex items-center gap-2"><span className="text-[#34C759]">🏆</span><span>Jason wins the fixture &#8212; 8 beats 5. Gemma loses.</span></div>
                         </div>
                       </div>
                     )}
-
                     {exampleStep === 4 && (
                       <div>
-                        <p className="mb-2">League points combine the fixture result with each player's captain bonus &#8212; calculated independently, then added together.</p>
+                        <p className="mb-2">League points combine the fixture result with each player's captain bonus.</p>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-2">
                           <div className="bg-[#F2F2F7] rounded-lg p-3">
                             <p className="text-[#8E8E93] mb-1">Jason &#8212; won fixture</p>
                             <div className="flex items-baseline gap-1.5"><span className="text-[#8E8E93]">Fixture win</span><span className="font-bold">3</span></div>
                             <div className="flex items-baseline gap-1.5"><span className="text-[#8E8E93]">Captain Ⓒ won</span><span className="font-bold">+1</span></div>
-                            <div className="border-t border-[#E5E5EA] mt-1.5 pt-1.5">
-                              <span className="text-xl font-bold">4</span> <span className="text-[#8E8E93]">league pts</span>
-                            </div>
+                            <div className="border-t border-[#E5E5EA] mt-1.5 pt-1.5"><span className="text-xl font-bold">4</span> <span className="text-[#8E8E93]">league pts</span></div>
                           </div>
                           <div className="bg-[#F2F2F7] rounded-lg p-3">
                             <p className="text-[#8E8E93] mb-1">Gemma &#8212; lost fixture</p>
                             <div className="flex items-baseline gap-1.5"><span className="text-[#8E8E93]">Fixture loss</span><span className="font-bold">0</span></div>
                             <div className="flex items-baseline gap-1.5"><span className="text-[#8E8E93]">Captain Ⓒ won</span><span className="font-bold">+1</span></div>
-                            <div className="border-t border-[#E5E5EA] mt-1.5 pt-1.5">
-                              <span className="text-xl font-bold text-[#34C759]">1</span> <span className="text-[#8E8E93]">league pt</span>
-                            </div>
+                            <div className="border-t border-[#E5E5EA] mt-1.5 pt-1.5"><span className="text-xl font-bold text-[#34C759]">1</span> <span className="text-[#8E8E93]">league pt</span></div>
                           </div>
                         </div>
-                        <p className="text-[11px] text-[#AEAEB2]">Even though Gemma lost the fixture, her captain (Australia) won &#8212; so she still banks 1 league point. That bonus is hers regardless of the result.</p>
+                        <p className="text-[11px] text-[#AEAEB2]">Even though Gemma lost the fixture, her captain won &#8212; so she still banks 1 league point.</p>
                       </div>
                     )}
                   </div>
@@ -799,20 +804,18 @@ export default function App() {
                   <div><h4 className="font-bold text-[#1C1C1E] mb-1">6. Forfeit</h4><p>Miss the deadline and you score 0. Your opponent gets 3 league points automatically. No captain bonus is possible without picks.</p></div>
                   <div className="bg-[#F2F2F7] p-3 rounded-xl border border-[#E5E5EA]">
                     <span className="font-bold text-[#1C1C1E] block mb-0.5">⚠️ Deadline</span>
-                    Picks lock 1 hour before the first match of each round. No changes after that.
+                    Picks lock 1 hour before the first match of each gameweek. The next gameweek opens automatically once the current one locks.
                   </div>
                 </div>
               )}
             </section>
 
             {/* Fixture pool */}
-            <section className="bg-white rounded-2xl border border-[#E5E5EA] p-5 shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
-              <h3 className="text-xs font-bold text-[#8E8E93] uppercase tracking-wider mb-4">Available Matchday Pool ({activeRound})</h3>
-              {currentRoundMatches.length === 0 ? (
-                <p className="text-xs text-[#8E8E93] italic">Fixtures not yet available for this round.</p>
-              ) : (
+            {roundOpen && currentPool.length > 0 && (
+              <section className="bg-white rounded-2xl border border-[#E5E5EA] p-5 shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
+                <h3 className="text-xs font-bold text-[#8E8E93] uppercase tracking-wider mb-4">Available Matchday Pool — {ROUND_LABELS[activeRound]}</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {currentRoundMatches.map((match) => {
+                  {currentPool.map((match) => {
                     const homeUsage = getUsageMetrics(match.home.id);
                     const awayUsage = getUsageMetrics(match.away.id);
                     const homeMaxed = homeUsage>=2 && !selections.some(s=>s?.id===match.home.id);
@@ -820,7 +823,7 @@ export default function App() {
                     const slotOwnsHome = selections[selectedSlot]?.id===match.home.id;
                     const slotOwnsAway = selections[selectedSlot]?.id===match.away.id;
                     return (
-                      <div key={match.id} className="bg-white border border-[#E5E5EA] rounded-xl p-3 flex flex-col justify-between relative overflow-hidden pl-4">
+                      <div key={match.matchId} className="bg-white border border-[#E5E5EA] rounded-xl p-3 flex flex-col justify-between relative overflow-hidden pl-4">
                         <div className="absolute top-0 bottom-0 left-0 w-[3px] bg-[#E5E5EA]" />
                         <div className="flex items-center justify-between w-full">
                           <button disabled={isFormLocked||homeMaxed} onClick={() => handleSelectNation(match.home)}
@@ -843,8 +846,8 @@ export default function App() {
                     );
                   })}
                 </div>
-              )}
-            </section>
+              </section>
+            )}
           </div>
         )}
 
@@ -859,7 +862,7 @@ export default function App() {
                   {ROUNDS.map(gw => (
                     <button key={gw} onClick={() => setActiveRound(gw)}
                       className={`px-3 py-1 text-[10px] font-bold rounded-lg transition-all ${activeRound===gw ? 'bg-white text-[#007AFF] shadow-sm' : 'text-[#636366]'}`}>
-                      {gw}
+                      {ROUND_SHORT[gw]}
                     </button>
                   ))}
                 </div>
@@ -871,8 +874,8 @@ export default function App() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {(H2H_FIXTURES[activeRound]||[]).map(([p1name,p2name], index) => {
                     const isUserMatch  = p1name===currentUser || p2name===currentUser;
-                    const gwDead       = GW_DEADLINES[activeRound] ?? GW_DEADLINES.GW1;
-                    const roundClosed  = Date.now() >= gwDead;
+                    const dl = deadlines[activeRound];
+                    const roundClosed = dl !== null && Date.now() >= dl;
                     const p1data = getPlayerPicksDisplay(p1name, activeRound);
                     const p2data = getPlayerPicksDisplay(p2name, activeRound);
                     const score1 = getPlayerScore(p1name, activeRound);
@@ -914,7 +917,11 @@ export default function App() {
                             <span className="font-mono text-sm font-bold text-[#1C1C1E] min-w-[20px] text-right">{score1!==null?score1:'—'}</span>
                           </div>
                         </div>
-                        <div className="h-[1px] bg-[#F2F2F7]" />
+                        <div className="flex items-center gap-2">
+                          <div className="flex-1 h-[1px] bg-[#F2F2F7]" />
+                          <span className="text-[9px] font-black text-[#AEAEB2] font-mono">VS</span>
+                          <div className="flex-1 h-[1px] bg-[#F2F2F7]" />
+                        </div>
                         <div className="flex items-center justify-between gap-2">
                           <div className="flex items-center gap-2 min-w-0 flex-1">
                             <div className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${p2name===currentUser ? 'bg-[#007AFF]' : 'bg-transparent'}`} />
@@ -979,24 +986,37 @@ export default function App() {
         {/* ════════ ADMIN ════════ */}
         {currentTab === 'admin' && isAdmin && (
           <div className="space-y-6">
-
             <div className="flex gap-1 flex-wrap">
               {ROUNDS.map(gw => (
                 <button key={gw} onClick={() => setActiveRound(gw)}
                   className={`px-3 py-1.5 text-[10px] font-bold rounded-lg transition-all ${activeRound===gw ? 'bg-[#007AFF] text-white' : 'bg-white border border-[#E5E5EA] text-[#636366] hover:bg-[#F2F2F7]'}`}>
-                  {gw}
+                  {ROUND_SHORT[gw]}
                 </button>
               ))}
             </div>
 
+            {/* Fixtures management */}
+            <section className="bg-white rounded-2xl border border-[#E5E5EA] p-5 shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
+              <h3 className="text-xs font-bold text-[#8E8E93] uppercase tracking-wider mb-1">Fixtures — {ROUND_LABELS[activeRound]}</h3>
+              <p className="text-[11px] text-[#8E8E93] mb-3">Pull this gameweek's matches live from football-data.org. This sets the pick pool and auto-calculates the deadline (1hr before first kickoff).</p>
+              <button onClick={handleRefreshFixtures} disabled={isFetchingFix}
+                className="w-full py-2.5 bg-[#1C1C1E] text-white rounded-xl font-bold text-xs transition-all hover:bg-black disabled:opacity-50 flex items-center justify-center gap-2">
+                {isFetchingFix ? <span className="animate-pulse">🌐 Fetching fixtures...</span> : `🔄 Refresh Fixtures (${ROUND_SHORT[activeRound]})`}
+              </button>
+              {(allFixtures[activeRound]?.length > 0) && (
+                <p className="text-[11px] text-[#34C759] font-semibold mt-2">✓ {allFixtures[activeRound].length} nations cached. Deadline: {deadlines[activeRound] ? new Date(deadlines[activeRound]).toLocaleString('en-GB',{timeZone:'Europe/London'}) + ' BST' : 'n/a'}</p>
+              )}
+            </section>
+
             {/* Submission status */}
             <section className="bg-white rounded-2xl border border-[#E5E5EA] p-5 shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
-              <h3 className="text-xs font-bold text-[#8E8E93] uppercase tracking-wider mb-4">Submission Status — {activeRound}</h3>
+              <h3 className="text-xs font-bold text-[#8E8E93] uppercase tracking-wider mb-4">Submission Status — {ROUND_LABELS[activeRound]}</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {ALL_PLAYERS.map(player => {
                   const submitted = !!(allPicks?.[activeRound]?.[player]?.picks?.length);
                   const picks     = allPicks?.[activeRound]?.[player]?.picks ?? [];
-                  const isForfeit = !submitted && Date.now() >= (GW_DEADLINES[activeRound]??0);
+                  const dl = deadlines[activeRound];
+                  const isForfeit = !submitted && dl !== null && Date.now() >= dl;
                   return (
                     <div key={player}
                       className={`flex items-center justify-between p-3 rounded-xl border ${submitted ? 'border-[#34C759]/30 bg-[#34C759]/5' : isForfeit ? 'border-[#FF3B30]/30 bg-[#FF3B30]/5' : 'border-[#E5E5EA] bg-[#F2F2F7]/50'}`}>
@@ -1027,34 +1047,26 @@ export default function App() {
 
             {/* Results entry + API fetch */}
             <section className="bg-white rounded-2xl border border-[#E5E5EA] p-5 shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
-              <h3 className="text-xs font-bold text-[#8E8E93] uppercase tracking-wider mb-1">Match Results — {activeRound}</h3>
-              <p className="text-[11px] text-[#8E8E93] mb-4">Fetch from the API after matches finish, review, then Calculate.</p>
-
-              {/* API fetch button */}
-              <button onClick={handleFetchFromAPI} disabled={isFetchingAPI}
+              <h3 className="text-xs font-bold text-[#8E8E93] uppercase tracking-wider mb-1">Match Results — {ROUND_LABELS[activeRound]}</h3>
+              <p className="text-[11px] text-[#8E8E93] mb-4">Fetch results from the API after matches finish, review, then Calculate.</p>
+              <button onClick={handleFetchResults} disabled={isFetchingAPI}
                 className="w-full mb-3 py-2.5 bg-[#5AC8FA] text-white rounded-xl font-bold text-xs transition-all hover:bg-[#32ADE6] disabled:opacity-50 flex items-center justify-center gap-2">
-                {isFetchingAPI ? <span className="animate-pulse">🌐 Fetching from football-data.org...</span> : `🌐 Fetch Results from API (${activeRound})`}
+                {isFetchingAPI ? <span className="animate-pulse">🌐 Fetching results...</span> : `🌐 Fetch Results from API (${ROUND_SHORT[activeRound]})`}
               </button>
-
-              {/* Fetch status message */}
               {fetchStatus && (
                 <div className={`mb-4 p-3 rounded-xl border text-xs font-semibold ${fetchStatus==='success' ? 'bg-[#34C759]/10 border-[#34C759]/30 text-[#34C759]' : 'bg-[#FF3B30]/10 border-[#FF3B30]/30 text-[#FF3B30]'}`}>
                   {fetchStatus==='success' ? '✓ ' : '⚠️ '}{fetchMessage}
                 </div>
               )}
-
               <div className="flex items-center gap-3 mb-3">
                 <div className="flex-1 h-[1px] bg-[#E5E5EA]" />
                 <span className="text-[10px] font-bold text-[#8E8E93] uppercase">or enter manually</span>
                 <div className="flex-1 h-[1px] bg-[#E5E5EA]" />
               </div>
-
-              {(MATCH_FIXTURES_POOL[activeRound]??[]).length === 0 ? (
-                <p className="text-xs text-[#8E8E93] italic">No fixtures defined for this round yet.</p>
-              ) : (
+              {(allFixtures[activeRound]?.length > 0) ? (
                 <div className="space-y-2">
-                  {(MATCH_FIXTURES_POOL[activeRound]??[]).map(match => (
-                    <div key={match.id} className="p-3 bg-[#F2F2F7]/50 rounded-xl border border-[#E5E5EA]">
+                  {allFixtures[activeRound].map(match => (
+                    <div key={match.matchId} className="p-3 bg-[#F2F2F7]/50 rounded-xl border border-[#E5E5EA]">
                       <div className="flex flex-col sm:flex-row gap-2">
                         {[match.home, match.away].map(nation => (
                           <div key={nation.id} className="flex items-center gap-2 flex-1">
@@ -1080,14 +1092,14 @@ export default function App() {
                     </div>
                   ))}
                 </div>
+              ) : (
+                <p className="text-xs text-[#8E8E93] italic">No fixtures cached yet. Refresh fixtures above first.</p>
               )}
-
               <button onClick={handleCalculateRound} disabled={isCalculating}
                 className="mt-5 w-full py-3 bg-[#007AFF] text-white rounded-xl font-bold text-sm transition-all hover:bg-[#0062CC] disabled:opacity-50 flex items-center justify-center gap-2">
-                {isCalculating ? '⚙️ Calculating...' : `⚽ Calculate ${activeRound} & Update League Table`}
+                {isCalculating ? '⚙️ Calculating...' : `⚽ Calculate ${ROUND_SHORT[activeRound]} & Update League Table`}
               </button>
             </section>
-
           </div>
         )}
 
