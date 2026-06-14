@@ -12,7 +12,7 @@ const ADMIN_USER       = 'Jason Gilbert';
 // GW deadlines in UTC (BST = UTC+1, so 20:00 BST = 19:00 UTC)
 const GW_DEADLINES = {
   GW1: new Date('2026-06-11T19:00:00Z').getTime(),
-  GW2: new Date('2026-06-18T19:00:00Z').getTime(),
+  GW2: new Date('2026-06-18T15:00:00Z').getTime(),
   GW3: new Date('2026-06-24T19:00:00Z').getTime(),
   GW4: new Date('2026-06-28T16:00:00Z').getTime(),
   GW5: new Date('2026-07-04T15:00:00Z').getTime(),
@@ -71,6 +71,20 @@ const MATCH_FIXTURES_POOL = {
     { id:'g1_11', home:{id:'civ',name:'Ivory Coast',  flag:'🇨🇮'}, away:{id:'ecu',name:'Ecuador',      flag:'🇪🇨'}, date:'Mon, 15 June', time:'00:00 BST'},
     { id:'g1_12', home:{id:'swe',name:'Sweden',       flag:'🇸🇪'}, away:{id:'tun',name:'Tunisia',      flag:'🇹🇳'}, date:'Mon, 15 June', time:'03:00 BST'},
   ],
+  GW2: [
+    { id:'g2_1',  home:{id:'cze',name:'Czechia',      flag:'🇨🇿'}, away:{id:'rsa',name:'South Africa', flag:'🇿🇦'}, date:'Thu, 18 June', time:'17:00 BST'},
+    { id:'g2_2',  home:{id:'sui',name:'Switzerland',  flag:'🇨🇭'}, away:{id:'bih',name:'Bosnia & Herz.',flag:'🇧🇦'}, date:'Thu, 18 June', time:'20:00 BST'},
+    { id:'g2_3',  home:{id:'can',name:'Canada',       flag:'🇨🇦'}, away:{id:'qat',name:'Qatar',        flag:'🇶🇦'}, date:'Thu, 18 June', time:'23:00 BST'},
+    { id:'g2_4',  home:{id:'mex',name:'Mexico',       flag:'🇲🇽'}, away:{id:'kor',name:'South Korea',  flag:'🇰🇷'}, date:'Fri, 19 June', time:'02:00 BST'},
+    { id:'g2_5',  home:{id:'usa',name:'USA',          flag:'🇺🇸'}, away:{id:'aus',name:'Australia',    flag:'🇦🇺'}, date:'Fri, 19 June', time:'20:00 BST'},
+    { id:'g2_6',  home:{id:'sco',name:'Scotland',     flag:'🏴󠁧󠁢󠁳󠁣󠁴󠁿'}, away:{id:'mar',name:'Morocco',      flag:'🇲🇦'}, date:'Fri, 19 June', time:'23:00 BST'},
+    { id:'g2_7',  home:{id:'bra',name:'Brazil',       flag:'🇧🇷'}, away:{id:'hai',name:'Haiti',        flag:'🇭🇹'}, date:'Sat, 20 June', time:'01:30 BST'},
+    { id:'g2_8',  home:{id:'tur',name:'Türkiye',      flag:'🇹🇷'}, away:{id:'par',name:'Paraguay',     flag:'🇵🇾'}, date:'Sat, 20 June', time:'05:00 BST'},
+    { id:'g2_9',  home:{id:'ned',name:'Netherlands',  flag:'🇳🇱'}, away:{id:'swe',name:'Sweden',       flag:'🇸🇪'}, date:'Sat, 20 June', time:'18:00 BST'},
+    { id:'g2_10', home:{id:'ger',name:'Germany',      flag:'🇩🇪'}, away:{id:'civ',name:'Ivory Coast',  flag:'🇨🇮'}, date:'Sat, 20 June', time:'21:00 BST'},
+    { id:'g2_11', home:{id:'ecu',name:'Ecuador',      flag:'🇪🇨'}, away:{id:'cuw',name:'Curaçao',      flag:'🇨🇼'}, date:'Sun, 21 June', time:'01:00 BST'},
+    { id:'g2_12', home:{id:'tun',name:'Tunisia',      flag:'🇹🇳'}, away:{id:'jpn',name:'Japan',        flag:'🇯🇵'}, date:'Sun, 21 June', time:'05:00 BST'},
+  ],
   GW4: [
     { id:'g4_1', home:{id:'usa',name:'USA',         flag:'🇺🇸'}, away:{id:'arg',name:'Argentina', flag:'🇦🇷'}, date:'Sun, 28 June', time:'17:00 BST'},
     { id:'g4_2', home:{id:'mex',name:'Mexico',      flag:'🇲🇽'}, away:{id:'fra',name:'France',    flag:'🇫🇷'}, date:'Sun, 28 June', time:'21:00 BST'},
@@ -80,7 +94,7 @@ const MATCH_FIXTURES_POOL = {
     { id:'g4_6', home:{id:'cro',name:'Croatia',     flag:'🇭🇷'}, away:{id:'bra',name:'Brazil',    flag:'🇧🇷'}, date:'Wed, 1 July',  time:'19:00 BST'},
   ],
 };
-['GW2','GW3','GW5','GW6','GW7'].forEach(gw => { if (!MATCH_FIXTURES_POOL[gw]) MATCH_FIXTURES_POOL[gw] = []; });
+['GW3','GW5','GW6','GW7'].forEach(gw => { if (!MATCH_FIXTURES_POOL[gw]) MATCH_FIXTURES_POOL[gw] = []; });
 
 // ── TLA → our nation ID mapping ───────────────────────────────────────────────
 // football-data.org uses TLA codes; we map them to our internal ids
@@ -130,15 +144,22 @@ function calcRoundH2H(allPicks, results, gwKey) {
     const score2 = calcPlayerScore(picks2, results);
     const f1 = score1 === null, f2 = score2 === null;
     let h1 = 0, h2 = 0;
-    if (!f1 && !f2) { if (score1 > score2) { h1=3; } else if (score2 > score1) { h2=3; } else { h1=1; h2=1; } }
-    else if (f1 && !f2) { h2=3; }
-    else if (!f1 && f2) { h1=3; }
+    // outcome = the fixture result before any captain bonus ('W'|'D'|'L')
+    let o1 = 'L', o2 = 'L';
+    if (!f1 && !f2) {
+      if (score1 > score2)      { h1=3; o1='W'; o2='L'; }
+      else if (score2 > score1) { h2=3; o1='L'; o2='W'; }
+      else                      { h1=1; h2=1; o1='D'; o2='D'; }
+    }
+    else if (f1 && !f2) { h2=3; o1='L'; o2='W'; }
+    else if (!f1 && f2) { h1=3; o1='W'; o2='L'; }
     // Captain bonus: +1 league point if this player's captain pick won,
-    // regardless of the fixture outcome (carries through even on a loss/forfeit)
+    // regardless of the fixture outcome (carries through even on a loss).
+    // The bonus affects league points only — NOT the W/D/L fixture record.
     if (!f1 && captainWon(picks1, results)) h1 += 1;
     if (!f2 && captainWon(picks2, results)) h2 += 1;
-    out[p1] = { h2hPts:h1, score:score1??0, forfeited:f1 };
-    out[p2] = { h2hPts:h2, score:score2??0, forfeited:f2 };
+    out[p1] = { h2hPts:h1, score:score1??0, forfeited:f1, outcome:o1 };
+    out[p2] = { h2hPts:h2, score:score2??0, forfeited:f2, outcome:o2 };
   });
   return out;
 }
@@ -155,8 +176,10 @@ function buildLeagueTable(allPicks, allResults) {
       table[player].played++;
       table[player].h2hPts    += data.h2hPts;
       table[player].totalScore += data.score;
-      if (data.h2hPts===3) table[player].w++;
-      else if (data.h2hPts===1) table[player].d++;
+      // W/D/L is based on the fixture outcome, not league points
+      // (which now include the captain bonus and can be 2 or 4)
+      if (data.outcome==='W') table[player].w++;
+      else if (data.outcome==='D') table[player].d++;
       else table[player].l++;
       (allPicks?.[gw]?.[player]?.picks ?? []).forEach(pick => {
         if (results[pick.id]==='W') table[player].winsSelected++;
