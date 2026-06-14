@@ -71,6 +71,7 @@ const TLA_TO_FLAG = {
   IRQ:'🇮🇶', // Iraq
   COD:'🇨🇩', // Congo DR
   CGO:'🇨🇬', // Congo Republic
+  URY:'🇺🇾', // Uruguay alt (ISO code)
   SVK:'🇸🇰', SRB:'🇷🇸', // safety extras in case of playoff entrants
 };
 const flagFor = (tla) => (tla && TLA_TO_FLAG[tla.toUpperCase()]) || '🏳️';
