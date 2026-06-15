@@ -575,7 +575,19 @@ export default function App() {
   };
 
   // ── Pick helpers ──────────────────────────────────────────────────────────
-  const getUsageMetrics = (teamId) => selections.filter(s => s?.id===teamId).length;
+  const getUsageMetrics = (teamId) => {
+    let count = 0;
+    // Caps accrue across the whole tournament: count locked picks in every
+    // other gameweek, then add the current (possibly unsaved) working slots.
+    ROUNDS.forEach(gw => {
+      if (gw === activeRound) return;
+      (allPicks?.[gw]?.[currentUser]?.picks ?? []).forEach(pick => {
+        if (pick?.id === teamId) count++;
+      });
+    });
+    selections.forEach(s => { if (s?.id === teamId) count++; });
+    return count;
+  };
 
   const handleSelectNation = (nation) => {
     if (isFormLocked) return;
