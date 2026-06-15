@@ -575,7 +575,20 @@ export default function App() {
   };
 
   // ── Pick helpers ──────────────────────────────────────────────────────────
-  const getUsageMetrics = (teamId) => selections.filter(s => s?.id===teamId).length;
+  // Caps are tournament-wide: a nation may be picked across at most 2 gameweeks.
+  // Count every gameweek for the current user, using the live `selections` for
+  // the active round (so unsaved edits are reflected) and saved picks elsewhere.
+  const getUsageMetrics = (teamId) => {
+    let count = 0;
+    ROUNDS.forEach(gw => {
+      if (gw === activeRound) {
+        count += selections.filter(s => s?.id===teamId).length;
+      } else {
+        count += (allPicks?.[gw]?.[currentUser]?.picks ?? []).filter(p => p?.id===teamId).length;
+      }
+    });
+    return count;
+  };
 
   const handleSelectNation = (nation) => {
     if (isFormLocked) return;
