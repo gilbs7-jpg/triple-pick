@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import {
   PICKS_URL, STATE_URL, JSONBIN_API_KEY,
-  ROUNDS, ROUND_LABELS, ROUND_SHORT, ADMIN_USER, GW_TO_MATCHDAY,
+  ROUNDS, ROUND_LABELS, ROUND_SHORT, ADMIN_USER, fixtureQuery,
   PLAYER_SLUGS, ALL_PLAYERS, H2H_FIXTURES,
   basePoints, calcPlayerScore, captainWon, calcRoundH2H, buildLeagueTable,
 } from './scoring.js';
@@ -357,16 +357,17 @@ export default function App() {
 
   // ── Admin: refresh fixtures from API (cache to Bin 2) ─────────────────────
   const handleRefreshFixtures = async () => {
-    const matchday = GW_TO_MATCHDAY[activeRound];
-    if (!matchday) { setFetchStatus('error'); setFetchMessage('No matchday mapping.'); return; }
+    const query = fixtureQuery(activeRound);
+    if (!query) { setFetchStatus('error'); setFetchMessage('No fixture mapping for this gameweek.'); return; }
     try {
       setIsFetchingFix(true);
       setFetchStatus(null); setFetchMessage('');
-      const res  = await fetch(`/api/results?matchday=${matchday}&mode=fixtures`);
+      const res  = await fetch(`/api/results?${query}&mode=fixtures`);
       const data = await res.json();
       if (!res.ok) { setFetchStatus('error'); setFetchMessage(data.error || 'Fixture fetch failed.'); return; }
       if (!data.fixtures || data.fixtures.length === 0) {
-        setFetchStatus('error'); setFetchMessage('No fixtures returned for this matchday yet.'); return;
+        const hint = data.availableStages?.length ? ` (API reports stages: ${data.availableStages.join(', ')})` : '';
+        setFetchStatus('error'); setFetchMessage(`No fixtures returned for this gameweek yet.${hint}`); return;
       }
 
       // Build pool: one entry per nation (each match yields 2 selectable nations)
@@ -408,12 +409,12 @@ export default function App() {
 
   // ── Admin: fetch results from API ─────────────────────────────────────────
   const handleFetchResults = async () => {
-    const matchday = GW_TO_MATCHDAY[activeRound];
-    if (!matchday) { setFetchStatus('error'); setFetchMessage('No matchday mapping.'); return; }
+    const query = fixtureQuery(activeRound);
+    if (!query) { setFetchStatus('error'); setFetchMessage('No fixture mapping for this gameweek.'); return; }
     try {
       setIsFetchingAPI(true);
       setFetchStatus(null); setFetchMessage('');
-      const res  = await fetch(`/api/results?matchday=${matchday}`);
+      const res  = await fetch(`/api/results?${query}`);
       const data = await res.json();
       if (!res.ok) { setFetchStatus('error'); setFetchMessage(data.error || 'API fetch failed.'); return; }
       if (!data.matches || data.matches.length === 0) {
