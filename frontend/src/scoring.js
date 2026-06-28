@@ -10,13 +10,34 @@ export const JSONBIN_API_KEY  = "$2a$10$SM58O3uX4Dttskq/9geD5OytFCpgoclTLo8BWMo6
 export const PICKS_URL        = `https://api.jsonbin.io/v3/b/${JSONBIN_PICKS_ID}`;
 export const STATE_URL        = `https://api.jsonbin.io/v3/b/${JSONBIN_STATE_ID}`;
 
-export const ROUNDS       = ['GW1','GW2','GW3','GW4','GW5','GW6','GW7'];
-export const ROUND_LABELS = { GW1:'Gameweek 1', GW2:'Gameweek 2', GW3:'Gameweek 3', GW4:'Gameweek 4', GW5:'Gameweek 5', GW6:'Gameweek 6', GW7:'Gameweek 7' };
-export const ROUND_SHORT  = { GW1:'GW 1', GW2:'GW 2', GW3:'GW 3', GW4:'GW 4', GW5:'GW 5', GW6:'GW 6', GW7:'GW 7' };
+export const ROUNDS       = ['GW1','GW2','GW3','GW4','GW5','GW6','GW7','GW8'];
+export const ROUND_LABELS = { GW1:'Gameweek 1', GW2:'Gameweek 2', GW3:'Gameweek 3', GW4:'Gameweek 4', GW5:'Gameweek 5', GW6:'Gameweek 6', GW7:'Gameweek 7', GW8:'Gameweek 8' };
+export const ROUND_SHORT  = { GW1:'GW 1', GW2:'GW 2', GW3:'GW 3', GW4:'GW 4', GW5:'GW 5', GW6:'GW 6', GW7:'GW 7', GW8:'GW 8' };
 export const ADMIN_USER   = 'Jason Gilbert';
 
-// Maps gameweek to football-data.org matchday number
-export const GW_TO_MATCHDAY = { GW1:1, GW2:2, GW3:3, GW4:4, GW5:5, GW6:6, GW7:7 };
+// Maps each gameweek to how it's addressed on football-data.org.
+// The group stage is addressable by matchday (1–3); the knockout rounds are
+// NOT — football-data.org only exposes them via the `stage` field, so those
+// gameweeks fetch the whole competition and filter by stage instead.
+//   GW4 → Round of 32, GW5 → Round of 16, GW6 → QF, GW7 → SF,
+//   GW8 → Final + 3rd-place playoff (4 teams, so 3 picks are still possible).
+export const GW_TO_QUERY = {
+  GW1: { matchday: 1 },
+  GW2: { matchday: 2 },
+  GW3: { matchday: 3 },
+  GW4: { stage: 'LAST_32' },
+  GW5: { stage: 'LAST_16' },
+  GW6: { stage: 'QUARTER_FINALS' },
+  GW7: { stage: 'SEMI_FINALS' },
+  GW8: { stage: 'FINAL,THIRD_PLACE' },
+};
+
+// Build the football-data.org query string for a gameweek's mapping.
+export const fixtureQuery = (gw) => {
+  const q = GW_TO_QUERY[gw];
+  if (!q) return null;
+  return q.matchday ? `matchday=${q.matchday}` : `stage=${encodeURIComponent(q.stage)}`;
+};
 
 // ── PLAYERS ───────────────────────────────────────────────────────────────────
 export const PLAYER_SLUGS = {
@@ -42,6 +63,9 @@ export const H2H_FIXTURES = {
   GW5: [['Jason Gilbert','Adam Brand'],['Richard Lee','Lianne Conway'],['Gemma D','Jona Moore'],['Kieran Smyth','Jamie Brown'],['Amelia Wood','Mark Bentley']],
   GW6: [['Jason Gilbert','Lianne Conway'],['Adam Brand','Amelia Wood'],['Richard Lee','Mark Bentley'],['Jona Moore','Kieran Smyth'],['Jamie Brown','Gemma D']],
   GW7: [['Jason Gilbert','Jona Moore'],['Lianne Conway','Jamie Brown'],['Adam Brand','Gemma D'],['Amelia Wood','Richard Lee'],['Mark Bentley','Kieran Smyth']],
+  // GW8 (Final week) — auto-generated, all five pairings are new vs GW1–GW7.
+  // Confirm/adjust to match the intended league schedule.
+  GW8: [['Jason Gilbert','Kieran Smyth'],['Gemma D','Richard Lee'],['Jona Moore','Lianne Conway'],['Adam Brand','Mark Bentley'],['Jamie Brown','Amelia Wood']],
 };
 
 // ── SCORING ENGINE ────────────────────────────────────────────────────────────

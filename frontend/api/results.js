@@ -1,14 +1,21 @@
 // Vercel serverless function — proxies football-data.org
-//   /api/results?matchday=1            → results (W/D/L per nation)
-//   /api/results?matchday=1&mode=fixtures → upcoming fixtures (teams, dates, times)
+//   /api/results?matchday=1                  → results (W/D/L per nation)
+//   /api/results?matchday=1&mode=fixtures     → upcoming fixtures (teams, dates, times)
+//   /api/results?stage=LAST_32                → knockout results by stage
+//   /api/results?stage=FINAL,THIRD_PLACE&mode=fixtures → knockout fixtures by stage
+//
+// The World Cup group stage is addressable by matchday (1–3). Knockout rounds
+// are NOT — football-data.org only labels them via the `stage` field — so for
+// stage requests we pull the whole competition and filter in-process. `stage`
+// accepts a comma-separated list (e.g. FINAL,THIRD_PLACE).
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET');
 
-  const { matchday, mode } = req.query;
-  if (!matchday) {
-    return res.status(400).json({ error: 'matchday parameter required' });
+  const { matchday, stage, mode } = req.query;
+  if (!matchday && !stage) {
+    return res.status(400).json({ error: 'matchday or stage parameter required' });
   }
 
   const apiKey = process.env.FOOTBALL_DATA_API_KEY;
@@ -17,7 +24,10 @@ export default async function handler(req, res) {
   }
 
   try {
-    const url = `https://api.football-data.org/v4/competitions/WC/matches?matchday=${matchday}`;
+    // Matchday can be filtered server-side; stage requests fetch all and filter.
+    const url = matchday
+      ? `https://api.football-data.org/v4/competitions/WC/matches?matchday=${matchday}`
+      : `https://api.football-data.org/v4/competitions/WC/matches`;
     const response = await fetch(url, { headers: { 'X-Auth-Token': apiKey } });
 
     if (!response.ok) {
@@ -26,7 +36,19 @@ export default async function handler(req, res) {
     }
 
     const data = await response.json();
-    const matches = data.matches || [];
+    const allMatches = data.matches || [];
+
+    // For stage requests, keep only matches in the requested knockout stage(s).
+    const wantedStages = stage ? stage.split(',').map(s => s.trim().toUpperCase()) : null;
+    const matches = wantedStages
+      ? allMatches.filter(m => wantedStages.includes((m.stage || '').toUpperCase()))
+      : allMatches;
+
+    // If a stage filter matched nothing, surface the stages the API does expose
+    // so the caller can see what football-data.org actually calls each round.
+    const availableStages = (wantedStages && matches.length === 0)
+      ? [...new Set(allMatches.map(m => m.stage).filter(Boolean))]
+      : undefined;
 
     // FIXTURES MODE — return team info, dates, kickoff times for building the pick pool
     if (mode === 'fixtures') {
@@ -41,7 +63,12 @@ export default async function handler(req, res) {
           awayTeam:  { tla: away.tla, name: away.name, shortName: away.shortName },
         };
       });
-      return res.status(200).json({ matchday: parseInt(matchday), fixtures });
+      return res.status(200).json({
+        matchday: matchday ? parseInt(matchday) : null,
+        stage: stage || null,
+        fixtures,
+        ...(availableStages ? { availableStages } : {}),
+      });
     }
 
     // RESULTS MODE (default) — return W/D/L per nation
@@ -74,7 +101,12 @@ export default async function handler(req, res) {
       };
     });
 
-    return res.status(200).json({ matchday: parseInt(matchday), matches: mapped });
+    return res.status(200).json({
+      matchday: matchday ? parseInt(matchday) : null,
+      stage: stage || null,
+      matches: mapped,
+      ...(availableStages ? { availableStages } : {}),
+    });
   } catch (err) {
     console.error('Proxy error:', err);
     return res.status(500).json({ error: err.message });

@@ -10,7 +10,7 @@
 //      but only if something actually changed (to stay within free-tier quotas).
 
 import {
-  ROUNDS, GW_TO_MATCHDAY, PICKS_URL, STATE_URL, JSONBIN_API_KEY,
+  ROUNDS, GW_TO_QUERY, PICKS_URL, STATE_URL, JSONBIN_API_KEY,
   buildLeagueTable,
 } from '../src/scoring.js';
 
@@ -89,16 +89,23 @@ export default async function handler(req, res) {
     // 2 + 3. Fetch + merge results for each active gameweek
     for (const gw of ROUNDS) {
       if (!gwIsActive(state.fixtures[gw], now)) continue;
-      const matchday = GW_TO_MATCHDAY[gw];
-      if (!matchday) continue;
+      const q = GW_TO_QUERY[gw];
+      if (!q) continue;
 
-      const apiRes = await fetch(`${FOOTBALL_API}?matchday=${matchday}`, {
+      // Group stage filters by matchday; knockout rounds fetch all and filter by stage.
+      const url = q.matchday ? `${FOOTBALL_API}?matchday=${q.matchday}` : FOOTBALL_API;
+      const apiRes = await fetch(url, {
         headers: { 'X-Auth-Token': apiKey },
       });
       if (!apiRes.ok) { processed.push({ gw, ok: false, status: apiRes.status }); continue; }
 
       const apiData = await apiRes.json();
-      const fetched = mapMatchesToResults(apiData.matches || []);
+      let matches = apiData.matches || [];
+      if (q.stage) {
+        const wanted = q.stage.split(',').map(s => s.trim().toUpperCase());
+        matches = matches.filter(m => wanted.includes((m.stage || '').toUpperCase()));
+      }
+      const fetched = mapMatchesToResults(matches);
       if (Object.keys(fetched).length === 0) { processed.push({ gw, ok: true, updated: 0 }); continue; }
 
       // Merge over existing results, preserving any manual Admin entries the API omits.
