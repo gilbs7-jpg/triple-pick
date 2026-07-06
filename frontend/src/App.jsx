@@ -43,6 +43,12 @@ const TLA_TO_FLAG = {
 };
 const flagFor = (tla) => (tla && TLA_TO_FLAG[tla.toUpperCase()]) || '🏳️';
 
+// Number of picks required per gameweek. The nation pool narrows as the
+// tournament progresses, so the last rounds allow fewer picks than 3.
+const PICKS_PER_GW = { GW1:3, GW2:3, GW3:3, GW4:3, GW5:3, GW6:2, GW7:1 };
+const picksRequired = (gw) => PICKS_PER_GW[gw] ?? 3;
+const slotGridClass = (n) => n === 1 ? 'md:grid-cols-1' : n === 2 ? 'md:grid-cols-2' : 'md:grid-cols-3';
+
 // Format an ISO UTC date to a friendly BST string + time
 function formatFixtureDate(utcDate) {
   try {
@@ -201,7 +207,7 @@ export default function App() {
   const [showRules,      setShowRules]      = useState(false);
   const [exampleStep,    setExampleStep]    = useState(1);
   const [selectedSlot,   setSelectedSlot]   = useState(0);
-  const [selections,     setSelections]     = useState([null,null,null]);
+  const [selections,     setSelections]     = useState(Array(picksRequired('GW1')).fill(null));
   const [armbandSlot,    setArmbandSlot]    = useState(0);
   const [isFormLocked,   setIsFormLocked]   = useState(false);
   const [isSaving,       setIsSaving]       = useState(false);
@@ -266,7 +272,7 @@ export default function App() {
         setAllFixtures(fixtures);
         setLeagueTable(buildLeagueTable(picks, results));
         const my = picks?.[activeRound]?.[currentUser];
-        if (my?.picks?.length === 3) {
+        if (my?.picks?.length === picksRequired(activeRound)) {
           setSelections(my.picks.map(p => ({id:p.id,name:p.name,flag:p.flag})));
           const ab = my.picks.findIndex(p => p.isArmband);
           setArmbandSlot(ab !== -1 ? ab : 0);
@@ -287,13 +293,13 @@ export default function App() {
   useEffect(() => {
     if (!currentUser || isLoadingData) return;
     const my = allPicks?.[activeRound]?.[currentUser];
-    if (my?.picks?.length === 3) {
+    if (my?.picks?.length === picksRequired(activeRound)) {
       setSelections(my.picks.map(p => ({id:p.id,name:p.name,flag:p.flag})));
       const ab = my.picks.findIndex(p => p.isArmband);
       setArmbandSlot(ab !== -1 ? ab : 0);
       setIsFormLocked(true);
     } else {
-      setSelections([null,null,null]);
+      setSelections(Array(picksRequired(activeRound)).fill(null));
       setArmbandSlot(0);
       setIsFormLocked(false);
     }
@@ -328,7 +334,11 @@ export default function App() {
   // ── Save picks ────────────────────────────────────────────────────────────
   const handleFinalizeAndSave = async () => {
     if (isFormLocked) { setIsFormLocked(false); return; }
-    if (selections.includes(null)) { alert('Please fill all 3 slots before locking.'); return; }
+    if (selections.includes(null)) {
+      const n = picksRequired(activeRound);
+      alert(`Please fill all ${n} slot${n===1?'':'s'} before locking.`);
+      return;
+    }
     try {
       setIsSaving(true);
       const res  = await fetch(PICKS_URL, {headers:{'X-Master-Key':JSONBIN_API_KEY}});
@@ -493,7 +503,7 @@ export default function App() {
     const updated = [...selections];
     updated[selectedSlot] = { id:nation.id, name:nation.name, flag:nation.flag };
     setSelections(updated);
-    if (selectedSlot < 2 && !updated[selectedSlot+1]) setSelectedSlot(selectedSlot+1);
+    if (selectedSlot < updated.length-1 && !updated[selectedSlot+1]) setSelectedSlot(selectedSlot+1);
   };
 
   const handleClearSlot = (idx, e) => {
@@ -643,7 +653,7 @@ export default function App() {
               ) : (
                 <>
                   {/* Slots */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
+                  <div className={`grid grid-cols-1 ${slotGridClass(selections.length)} gap-3 mb-4`}>
                     {selections.map((nation, idx) => {
                       const isActive  = selectedSlot===idx;
                       const isArmband = armbandSlot===idx;
@@ -712,7 +722,7 @@ export default function App() {
                     <h4 className="font-black text-[#1C1C1E] mb-2 text-sm">⚽ How to Play</h4>
                     <p className="mb-2">Triple Pick is a head-to-head game played across the whole World Cup. Here's the idea:</p>
                     <ul className="space-y-1.5 ml-1">
-                      <li className="flex gap-2"><span>🎯</span><span>Each gameweek you pick <strong>3 nations</strong> from that round's matches.</span></li>
+                      <li className="flex gap-2"><span>🎯</span><span>Each gameweek you pick <strong>3 nations</strong> from that round's matches (fewer in the late rounds as the pool narrows).</span></li>
                       <li className="flex gap-2"><span>🆚</span><span>You're drawn against <strong>one opponent</strong> each gameweek — a different manager every round.</span></li>
                       <li className="flex gap-2"><span>📊</span><span>Your nations earn points on their results. Add them up for your <strong>gameweek score</strong>.</span></li>
                       <li className="flex gap-2"><span>🏆</span><span>Beat your opponent's score and you win the fixture — earning <strong>league points</strong>.</span></li>
@@ -722,7 +732,7 @@ export default function App() {
                     <p className="mt-2 text-[#8E8E93]">It's simple to play, but the captain calls, the 2-cap limit, and who you're drawn against each week make it a proper tactical battle.</p>
                   </div>
 
-                  <div><h4 className="font-bold text-[#1C1C1E] mb-1">1. Triple Pick</h4><p>Select exactly 3 nations from the active match pool each gameweek.</p></div>
+                  <div><h4 className="font-bold text-[#1C1C1E] mb-1">1. Triple Pick</h4><p>Select 3 nations from the active match pool each gameweek — narrowing to 2 in the Semi-Finals and 1 in the Final as fewer nations remain.</p></div>
                   <div><h4 className="font-bold text-[#1C1C1E] mb-1">2. 2-Cap Limit</h4><p>Any nation can only be selected <span className="font-bold text-black">up to 2 times</span> across the entire tournament.</p></div>
                   <div><h4 className="font-bold text-[#1C1C1E] mb-1">3. Armband Ⓒ</h4><p>Nominate one pick as captain. If that nation <strong>wins</strong>, you earn a <span className="font-bold text-[#34C759]">+1 bonus point</span> toward your gameweek score. A draw does not trigger the bonus.</p></div>
                   <div><h4 className="font-bold text-[#1C1C1E] mb-1">4. Head-to-Head</h4>
