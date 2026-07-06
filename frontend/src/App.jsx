@@ -645,7 +645,7 @@ export default function App() {
                   {selections.length === 2 && (
                     <div className="mb-4 px-3 py-2 bg-[#007AFF]/5 border border-[#007AFF]/20 rounded-xl flex items-center gap-2">
                       <span className="text-sm">🏆</span>
-                      <p className="text-xs font-semibold text-[#007AFF]">Final week — the pool is just the Final and the 3rd-place playoff, so pick <strong>2 nations</strong> and captain one of them.</p>
+                      <p className="text-xs font-semibold text-[#007AFF]">{activeRound === 'GW8' ? 'Final week — the pool is just the Final and the 3rd-place playoff' : 'Semi-final week — the pool is just the 2 semi-finals'}, so pick <strong>2 nations</strong> and captain one of them.</p>
                     </div>
                   )}
                   {/* Slots */}
@@ -718,7 +718,7 @@ export default function App() {
                     <h4 className="font-black text-[#1C1C1E] mb-2 text-sm">⚽ How to Play</h4>
                     <p className="mb-2">Triple Pick is a head-to-head game played across the whole World Cup. Here's the idea:</p>
                     <ul className="space-y-1.5 ml-1">
-                      <li className="flex gap-2"><span>🎯</span><span>Each gameweek you pick <strong>3 nations</strong> from that round's matches — except the final week, where you pick <strong>2</strong>.</span></li>
+                      <li className="flex gap-2"><span>🎯</span><span>Each gameweek you pick <strong>3 nations</strong> from that round's matches — except the last two weeks (Semis and the Final), where you pick <strong>2</strong>.</span></li>
                       <li className="flex gap-2"><span>🆚</span><span>You're drawn against <strong>one opponent</strong> each gameweek — a different manager every round.</span></li>
                       <li className="flex gap-2"><span>📊</span><span>Your nations earn points on their results. Add them up for your <strong>gameweek score</strong>.</span></li>
                       <li className="flex gap-2"><span>🏆</span><span>Beat your opponent's score and you win the fixture — earning <strong>league points</strong>.</span></li>
@@ -728,7 +728,7 @@ export default function App() {
                     <p className="mt-2 text-[#8E8E93]">It's simple to play, but the captain calls, the 2-cap limit, and who you're drawn against each week make it a proper tactical battle.</p>
                   </div>
 
-                  <div><h4 className="font-bold text-[#1C1C1E] mb-1">1. Triple Pick</h4><p>Select exactly 3 nations from the active match pool each gameweek. The final gameweek is the exception: its pool is only the Final and the 3rd-place playoff (4 nations), so you select <span className="font-bold text-black">2 nations</span> — the armband still applies.</p></div>
+                  <div><h4 className="font-bold text-[#1C1C1E] mb-1">1. Triple Pick</h4><p>Select exactly 3 nations from the active match pool each gameweek. The last two gameweeks are the exception: the Semi-finals and the Final + 3rd-place playoff each have only 2 matches (4 nations), so you select <span className="font-bold text-black">2 nations</span> — the armband still applies.</p></div>
                   <div><h4 className="font-bold text-[#1C1C1E] mb-1">2. 2-Cap Limit</h4><p>Any nation can only be selected <span className="font-bold text-black">up to 2 times</span> across the entire tournament.</p></div>
                   <div><h4 className="font-bold text-[#1C1C1E] mb-1">3. Armband Ⓒ</h4><p>Nominate one pick as captain. If that nation <strong>wins</strong>, you earn a <span className="font-bold text-[#34C759]">+1 bonus point</span> toward your gameweek score. A draw does not trigger the bonus.</p></div>
                   <div><h4 className="font-bold text-[#1C1C1E] mb-1">4. Head-to-Head</h4>
