@@ -20,7 +20,8 @@ export const ADMIN_USER   = 'Jason Gilbert';
 // NOT — football-data.org only exposes them via the `stage` field, so those
 // gameweeks fetch the whole competition and filter by stage instead.
 //   GW4 → Round of 32, GW5 → Round of 16, GW6 → QF, GW7 → SF,
-//   GW8 → Final + 3rd-place playoff (only 2 matches / 4 nations — see picksRequired).
+//   GW8 → Final + 3rd-place playoff.
+// GW7 and GW8 are 2-match rounds (4 nations) — see picksRequired.
 export const GW_TO_QUERY = {
   GW1: { matchday: 1 },
   GW2: { matchday: 2 },
@@ -32,9 +33,10 @@ export const GW_TO_QUERY = {
   GW8: { stage: 'FINAL,THIRD_PLACE' },
 };
 
-// Picks per gameweek: 3 normally, but GW8's pool is just the Final + 3rd-place
-// playoff (2 matches / 4 nations), so the final week is 2 picks + armband.
-export const PICKS_PER_ROUND = { GW8: 2 };
+// Picks per gameweek: 3 normally, but GW7 (semi-finals) and GW8 (Final +
+// 3rd-place playoff) each have only 2 matches / 4 nations, so those weeks
+// are 2 picks + armband.
+export const PICKS_PER_ROUND = { GW7: 2, GW8: 2 };
 export const picksRequired = (gw) => PICKS_PER_ROUND[gw] ?? 3;
 
 // Build the football-data.org query string for a gameweek's mapping.
