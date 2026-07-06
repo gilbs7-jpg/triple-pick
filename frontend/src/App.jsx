@@ -7,6 +7,12 @@ import {
   basePoints, calcPlayerScore, captainWon, calcRoundH2H, buildLeagueTable,
 } from './scoring.js';
 
+// Number of picks required per gameweek. The pool of nations narrows as the
+// knockout stages progress, so GW7 (Semi-Finals, 4 nations) and GW8 (Final +
+// 3rd place, 4 nations) require fewer picks than the earlier rounds.
+const PICKS_PER_GW = { GW1:3, GW2:3, GW3:3, GW4:3, GW5:3, GW6:3, GW7:2, GW8:1 };
+const picksRequired = (gw) => PICKS_PER_GW[gw] ?? 3;
+
 // ── TLA → FLAG EMOJI ──────────────────────────────────────────────────────────
 // Static reference data covering all 48 World Cup 2026 nations.
 // Keyed by football-data.org TLA codes. Country→flag never changes, so this is
@@ -201,7 +207,7 @@ export default function App() {
   const [showRules,      setShowRules]      = useState(false);
   const [exampleStep,    setExampleStep]    = useState(1);
   const [selectedSlot,   setSelectedSlot]   = useState(0);
-  const [selections,     setSelections]     = useState([null,null,null]);
+  const [selections,     setSelections]     = useState(() => Array(picksRequired('GW1')).fill(null));
   const [armbandSlot,    setArmbandSlot]    = useState(0);
   const [isFormLocked,   setIsFormLocked]   = useState(false);
   const [isSaving,       setIsSaving]       = useState(false);
@@ -266,7 +272,7 @@ export default function App() {
         setAllFixtures(fixtures);
         setLeagueTable(buildLeagueTable(picks, results));
         const my = picks?.[activeRound]?.[currentUser];
-        if (my?.picks?.length === 3) {
+        if (my?.picks?.length === picksRequired(activeRound)) {
           setSelections(my.picks.map(p => ({id:p.id,name:p.name,flag:p.flag})));
           const ab = my.picks.findIndex(p => p.isArmband);
           setArmbandSlot(ab !== -1 ? ab : 0);
@@ -287,13 +293,13 @@ export default function App() {
   useEffect(() => {
     if (!currentUser || isLoadingData) return;
     const my = allPicks?.[activeRound]?.[currentUser];
-    if (my?.picks?.length === 3) {
+    if (my?.picks?.length === picksRequired(activeRound)) {
       setSelections(my.picks.map(p => ({id:p.id,name:p.name,flag:p.flag})));
       const ab = my.picks.findIndex(p => p.isArmband);
       setArmbandSlot(ab !== -1 ? ab : 0);
       setIsFormLocked(true);
     } else {
-      setSelections([null,null,null]);
+      setSelections(Array(picksRequired(activeRound)).fill(null));
       setArmbandSlot(0);
       setIsFormLocked(false);
     }
@@ -328,7 +334,7 @@ export default function App() {
   // ── Save picks ────────────────────────────────────────────────────────────
   const handleFinalizeAndSave = async () => {
     if (isFormLocked) { setIsFormLocked(false); return; }
-    if (selections.includes(null)) { alert('Please fill all 3 slots before locking.'); return; }
+    if (selections.includes(null)) { alert(`Please fill all ${picksRequired(activeRound)} slot${picksRequired(activeRound)===1?'':'s'} before locking.`); return; }
     try {
       setIsSaving(true);
       const res  = await fetch(PICKS_URL, {headers:{'X-Master-Key':JSONBIN_API_KEY}});
@@ -493,7 +499,7 @@ export default function App() {
     const updated = [...selections];
     updated[selectedSlot] = { id:nation.id, name:nation.name, flag:nation.flag };
     setSelections(updated);
-    if (selectedSlot < 2 && !updated[selectedSlot+1]) setSelectedSlot(selectedSlot+1);
+    if (selectedSlot < picksRequired(activeRound)-1 && !updated[selectedSlot+1]) setSelectedSlot(selectedSlot+1);
   };
 
   const handleClearSlot = (idx, e) => {
@@ -643,7 +649,7 @@ export default function App() {
               ) : (
                 <>
                   {/* Slots */}
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
+                  <div className={`grid grid-cols-1 ${{1:'md:grid-cols-1',2:'md:grid-cols-2',3:'md:grid-cols-3'}[picksRequired(activeRound)] || 'md:grid-cols-3'} gap-3 mb-4`}>
                     {selections.map((nation, idx) => {
                       const isActive  = selectedSlot===idx;
                       const isArmband = armbandSlot===idx;
@@ -935,8 +941,9 @@ export default function App() {
                     const p2data = getPlayerPicksDisplay(p2name, activeRound);
                     const score1 = getPlayerScore(p1name, activeRound);
                     const score2 = getPlayerScore(p2name, activeRound);
-                    const p1forfeited = roundClosed && !allPicks?.[activeRound]?.[p1name]?.picks?.length;
-                    const p2forfeited = roundClosed && !allPicks?.[activeRound]?.[p2name]?.picks?.length;
+                    const required = picksRequired(activeRound);
+                    const p1forfeited = roundClosed && (allPicks?.[activeRound]?.[p1name]?.picks?.length ?? 0) < required;
+                    const p2forfeited = roundClosed && (allPicks?.[activeRound]?.[p2name]?.picks?.length ?? 0) < required;
 
                     const renderPicks = (pd, forfeited) => {
                       if (forfeited) return <span className="text-[10px] font-bold text-[#FF3B30] bg-[#FF3B30]/10 px-1.5 py-0.5 rounded">FORFEIT</span>;
@@ -1164,8 +1171,8 @@ export default function App() {
               <h3 className="text-xs font-bold text-[#8E8E93] uppercase tracking-wider mb-4">Submission Status — {ROUND_LABELS[activeRound]}</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {ALL_PLAYERS.map(player => {
-                  const submitted = !!(allPicks?.[activeRound]?.[player]?.picks?.length);
                   const picks     = allPicks?.[activeRound]?.[player]?.picks ?? [];
+                  const submitted = picks.length >= picksRequired(activeRound);
                   const dl = deadlines[activeRound];
                   const isForfeit = !submitted && dl !== null && Date.now() >= dl;
                   return (
