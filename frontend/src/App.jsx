@@ -3,7 +3,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import {
   PICKS_URL, STATE_URL, JSONBIN_API_KEY,
   ROUNDS, ROUND_LABELS, ROUND_SHORT, ADMIN_USER, fixtureQuery,
-  PLAYER_SLUGS, ALL_PLAYERS, H2H_FIXTURES,
+  PLAYER_SLUGS, ALL_PLAYERS, H2H_FIXTURES, picksRequired,
   basePoints, calcPlayerScore, captainWon, calcRoundH2H, buildLeagueTable,
 } from './scoring.js';
 
@@ -201,7 +201,7 @@ export default function App() {
   const [showRules,      setShowRules]      = useState(false);
   const [exampleStep,    setExampleStep]    = useState(1);
   const [selectedSlot,   setSelectedSlot]   = useState(0);
-  const [selections,     setSelections]     = useState([null,null,null]);
+  const [selections,     setSelections]     = useState(Array(picksRequired('GW1')).fill(null));
   const [armbandSlot,    setArmbandSlot]    = useState(0);
   const [isFormLocked,   setIsFormLocked]   = useState(false);
   const [isSaving,       setIsSaving]       = useState(false);
@@ -266,7 +266,7 @@ export default function App() {
         setAllFixtures(fixtures);
         setLeagueTable(buildLeagueTable(picks, results));
         const my = picks?.[activeRound]?.[currentUser];
-        if (my?.picks?.length === 3) {
+        if (my?.picks?.length === picksRequired(activeRound)) {
           setSelections(my.picks.map(p => ({id:p.id,name:p.name,flag:p.flag})));
           const ab = my.picks.findIndex(p => p.isArmband);
           setArmbandSlot(ab !== -1 ? ab : 0);
@@ -287,13 +287,13 @@ export default function App() {
   useEffect(() => {
     if (!currentUser || isLoadingData) return;
     const my = allPicks?.[activeRound]?.[currentUser];
-    if (my?.picks?.length === 3) {
+    if (my?.picks?.length === picksRequired(activeRound)) {
       setSelections(my.picks.map(p => ({id:p.id,name:p.name,flag:p.flag})));
       const ab = my.picks.findIndex(p => p.isArmband);
       setArmbandSlot(ab !== -1 ? ab : 0);
       setIsFormLocked(true);
     } else {
-      setSelections([null,null,null]);
+      setSelections(Array(picksRequired(activeRound)).fill(null));
       setArmbandSlot(0);
       setIsFormLocked(false);
     }
@@ -328,7 +328,11 @@ export default function App() {
   // ── Save picks ────────────────────────────────────────────────────────────
   const handleFinalizeAndSave = async () => {
     if (isFormLocked) { setIsFormLocked(false); return; }
-    if (selections.includes(null)) { alert('Please fill all 3 slots before locking.'); return; }
+    if (selections.includes(null)) {
+      const n = picksRequired(activeRound);
+      alert(`Please fill all ${n} slot${n===1?'':'s'} before locking.`);
+      return;
+    }
     try {
       setIsSaving(true);
       const res  = await fetch(PICKS_URL, {headers:{'X-Master-Key':JSONBIN_API_KEY}});
@@ -493,7 +497,7 @@ export default function App() {
     const updated = [...selections];
     updated[selectedSlot] = { id:nation.id, name:nation.name, flag:nation.flag };
     setSelections(updated);
-    if (selectedSlot < 2 && !updated[selectedSlot+1]) setSelectedSlot(selectedSlot+1);
+    if (selectedSlot < picksRequired(activeRound)-1 && !updated[selectedSlot+1]) setSelectedSlot(selectedSlot+1);
   };
 
   const handleClearSlot = (idx, e) => {
@@ -712,7 +716,7 @@ export default function App() {
                     <h4 className="font-black text-[#1C1C1E] mb-2 text-sm">⚽ How to Play</h4>
                     <p className="mb-2">Triple Pick is a head-to-head game played across the whole World Cup. Here's the idea:</p>
                     <ul className="space-y-1.5 ml-1">
-                      <li className="flex gap-2"><span>🎯</span><span>Each gameweek you pick <strong>3 nations</strong> from that round's matches.</span></li>
+                      <li className="flex gap-2"><span>🎯</span><span>Each gameweek you pick <strong>3 nations</strong> from that round's matches — fewer once the pool narrows in the Semi-Finals.</span></li>
                       <li className="flex gap-2"><span>🆚</span><span>You're drawn against <strong>one opponent</strong> each gameweek — a different manager every round.</span></li>
                       <li className="flex gap-2"><span>📊</span><span>Your nations earn points on their results. Add them up for your <strong>gameweek score</strong>.</span></li>
                       <li className="flex gap-2"><span>🏆</span><span>Beat your opponent's score and you win the fixture — earning <strong>league points</strong>.</span></li>
@@ -722,7 +726,7 @@ export default function App() {
                     <p className="mt-2 text-[#8E8E93]">It's simple to play, but the captain calls, the 2-cap limit, and who you're drawn against each week make it a proper tactical battle.</p>
                   </div>
 
-                  <div><h4 className="font-bold text-[#1C1C1E] mb-1">1. Triple Pick</h4><p>Select exactly 3 nations from the active match pool each gameweek.</p></div>
+                  <div><h4 className="font-bold text-[#1C1C1E] mb-1">1. Triple Pick</h4><p>Select 3 nations from the active match pool each gameweek — except the Semi-Finals (GW7), which only has 2 slots since the pool narrows to 4 nations.</p></div>
                   <div><h4 className="font-bold text-[#1C1C1E] mb-1">2. 2-Cap Limit</h4><p>Any nation can only be selected <span className="font-bold text-black">up to 2 times</span> across the entire tournament.</p></div>
                   <div><h4 className="font-bold text-[#1C1C1E] mb-1">3. Armband Ⓒ</h4><p>Nominate one pick as captain. If that nation <strong>wins</strong>, you earn a <span className="font-bold text-[#34C759]">+1 bonus point</span> toward your gameweek score. A draw does not trigger the bonus.</p></div>
                   <div><h4 className="font-bold text-[#1C1C1E] mb-1">4. Head-to-Head</h4>
@@ -935,8 +939,8 @@ export default function App() {
                     const p2data = getPlayerPicksDisplay(p2name, activeRound);
                     const score1 = getPlayerScore(p1name, activeRound);
                     const score2 = getPlayerScore(p2name, activeRound);
-                    const p1forfeited = roundClosed && !allPicks?.[activeRound]?.[p1name]?.picks?.length;
-                    const p2forfeited = roundClosed && !allPicks?.[activeRound]?.[p2name]?.picks?.length;
+                    const p1forfeited = roundClosed && (allPicks?.[activeRound]?.[p1name]?.picks?.length ?? 0) < picksRequired(activeRound);
+                    const p2forfeited = roundClosed && (allPicks?.[activeRound]?.[p2name]?.picks?.length ?? 0) < picksRequired(activeRound);
 
                     const renderPicks = (pd, forfeited) => {
                       if (forfeited) return <span className="text-[10px] font-bold text-[#FF3B30] bg-[#FF3B30]/10 px-1.5 py-0.5 rounded">FORFEIT</span>;
@@ -1164,10 +1168,10 @@ export default function App() {
               <h3 className="text-xs font-bold text-[#8E8E93] uppercase tracking-wider mb-4">Submission Status — {ROUND_LABELS[activeRound]}</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {ALL_PLAYERS.map(player => {
-                  const submitted = !!(allPicks?.[activeRound]?.[player]?.picks?.length);
                   const picks     = allPicks?.[activeRound]?.[player]?.picks ?? [];
+                  const submitted = picks.length > 0;
                   const dl = deadlines[activeRound];
-                  const isForfeit = !submitted && dl !== null && Date.now() >= dl;
+                  const isForfeit = picks.length < picksRequired(activeRound) && dl !== null && Date.now() >= dl;
                   return (
                     <div key={player}
                       className={`flex items-center justify-between p-3 rounded-xl border ${submitted ? 'border-[#34C759]/30 bg-[#34C759]/5' : isForfeit ? 'border-[#FF3B30]/30 bg-[#FF3B30]/5' : 'border-[#E5E5EA] bg-[#F2F2F7]/50'}`}>

@@ -15,6 +15,13 @@ export const ROUND_LABELS = { GW1:'Gameweek 1', GW2:'Gameweek 2', GW3:'Gameweek 
 export const ROUND_SHORT  = { GW1:'GW 1', GW2:'GW 2', GW3:'GW 3', GW4:'GW 4', GW5:'GW 5', GW6:'GW 6', GW7:'GW 7', GW8:'GW 8' };
 export const ADMIN_USER   = 'Jason Gilbert';
 
+// Picks required per gameweek. Most rounds have a big enough pool for 3, but
+// GW7 (Semi-Finals) only has 2 matches / 4 nations, so it drops to 2. GW8
+// combines the Final + 3rd-place playoff into one 4-nation pool specifically
+// to keep 3 picks possible there (see GW_TO_QUERY.GW8 below).
+export const PICKS_PER_GW = { GW1:3, GW2:3, GW3:3, GW4:3, GW5:3, GW6:3, GW7:2, GW8:3 };
+export const picksRequired = (gw) => PICKS_PER_GW[gw] ?? 3;
+
 // Maps each gameweek to how it's addressed on football-data.org.
 // The group stage is addressable by matchday (1–3); the knockout rounds are
 // NOT — football-data.org only exposes them via the `stage` field, so those
