@@ -6,6 +6,9 @@ import {
   PLAYER_SLUGS, ALL_PLAYERS, H2H_FIXTURES,
   basePoints, calcPlayerScore, captainWon, calcRoundH2H, buildLeagueTable,
 } from './scoring.js';
+import { PRIVACY_POLICY_SECTIONS, PRIVACY_POLICY_LAST_UPDATED } from './legal.js';
+
+const COOKIE_CONSENT_KEY = 'tp_cookie_consent';
 
 // ── TLA → FLAG EMOJI ──────────────────────────────────────────────────────────
 // Static reference data covering all 48 World Cup 2026 nations.
@@ -199,6 +202,8 @@ export default function App() {
   const [currentUser,    setCurrentUser]    = useState(null);
   const [invalidUser,    setInvalidUser]    = useState(false);
   const [showRules,      setShowRules]      = useState(false);
+  const [showPrivacy,    setShowPrivacy]    = useState(false);
+  const [cookieConsent,  setCookieConsent]  = useState(null);
   const [exampleStep,    setExampleStep]    = useState(1);
   const [selectedSlot,   setSelectedSlot]   = useState(0);
   const [selections,     setSelections]     = useState([null,null,null]);
@@ -245,6 +250,16 @@ export default function App() {
     else if (!p)                { setCurrentUser(PLAYER_SLUGS['you']); }
     else                        { setInvalidUser(true); }
   }, []);
+
+  // ── Cookie/local-storage consent ──────────────────────────────────────────
+  useEffect(() => {
+    setCookieConsent(window.localStorage.getItem(COOKIE_CONSENT_KEY));
+  }, []);
+
+  const recordCookieConsent = (choice) => {
+    window.localStorage.setItem(COOKIE_CONSENT_KEY, choice);
+    setCookieConsent(choice);
+  };
 
   // ── Load all data ─────────────────────────────────────────────────────────
   useEffect(() => {
@@ -1255,6 +1270,56 @@ export default function App() {
         )}
 
       </main>
+
+      <footer className="max-w-4xl mx-auto mt-6 flex justify-center">
+        <button onClick={() => setShowPrivacy(true)}
+          className="text-[10px] font-semibold text-[#8E8E93] hover:text-[#007AFF] uppercase tracking-wider">
+          Privacy Policy
+        </button>
+      </footer>
+
+      {/* PRIVACY POLICY MODAL */}
+      {showPrivacy && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50" onClick={() => setShowPrivacy(false)}>
+          <div className="bg-white rounded-2xl border border-[#E5E5EA] shadow-xl max-w-lg w-full max-h-[80vh] overflow-y-auto p-5" onClick={e => e.stopPropagation()}>
+            <div className="flex justify-between items-start mb-1">
+              <h3 className="text-sm font-bold text-[#1C1C1E]">Privacy Policy</h3>
+              <button onClick={() => setShowPrivacy(false)} className="text-[#8E8E93] text-xs font-bold">✕</button>
+            </div>
+            <p className="text-[10px] text-[#8E8E93] mb-4">Last updated {PRIVACY_POLICY_LAST_UPDATED}</p>
+            <div className="space-y-4">
+              {PRIVACY_POLICY_SECTIONS.map(section => (
+                <div key={section.heading}>
+                  <h4 className="text-xs font-bold text-[#1C1C1E] mb-1">{section.heading}</h4>
+                  <p className="text-[11px] text-[#636366] leading-relaxed">{section.body}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* COOKIE / LOCAL STORAGE CONSENT BANNER */}
+      {cookieConsent === null && (
+        <div className="fixed bottom-0 inset-x-0 z-50 p-4">
+          <div className="max-w-4xl mx-auto bg-white rounded-2xl border border-[#E5E5EA] shadow-xl p-4 flex flex-col sm:flex-row items-center gap-3">
+            <p className="text-[11px] text-[#636366] flex-1">
+              We use strictly necessary local storage to keep you signed in and remember this choice — nothing is used for tracking or ads.{' '}
+              <button onClick={() => setShowPrivacy(true)} className="text-[#007AFF] font-semibold underline">Learn more</button>
+            </p>
+            <div className="flex gap-2 flex-shrink-0">
+              <button onClick={() => recordCookieConsent('essential-only')}
+                className="px-3 py-1.5 text-xs font-semibold rounded-lg border border-[#E5E5EA] text-[#636366] hover:bg-[#F2F2F7]">
+                Essential only
+              </button>
+              <button onClick={() => recordCookieConsent('accepted')}
+                className="px-3 py-1.5 text-xs font-bold rounded-lg bg-[#007AFF] text-white hover:bg-[#0062CC]">
+                Accept
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
