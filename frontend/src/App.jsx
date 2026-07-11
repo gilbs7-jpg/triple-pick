@@ -1092,7 +1092,7 @@ export default function App() {
                 { key:'crystalBall',      emoji:'🔮', title:'Crystal Ball',      desc:'Most outright wins picked',   suffix:'wins' },
                 { key:'maverick',         emoji:'🃏', title:'The Maverick',       desc:'Most picks no one else made', suffix:'unique' },
                 { key:'banker',           emoji:'💰', title:'Banker',             desc:'Highest single gameweek score', suffix:'pts' },
-                { key:'consistent',       emoji:'📊', title:'Mr Consistent',      desc:'Smallest gap, best to worst GW', suffix:'spread' },
+                { key:'consistent',       emoji:'📊', title:'Mx Consistent',      desc:'Smallest gap, best to worst GW', suffix:'spread' },
                 { key:'heartbreaker',     emoji:'💔', title:'Heartbreaker',       desc:'Most fixtures lost by 1 point', suffix:'losses' },
                 { key:'forfeitKing',      emoji:'🥄', title:'Wooden Spoon',       desc:'Most missed deadlines',       suffix:'forfeits' },
                 { key:'captainChaos',     emoji:'🌪️', title:'Captain Chaos',      desc:'Worst armband luck',          suffix:'fails' },
