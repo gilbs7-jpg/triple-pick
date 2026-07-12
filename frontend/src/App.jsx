@@ -266,7 +266,7 @@ export default function App() {
         setAllFixtures(fixtures);
         setLeagueTable(buildLeagueTable(picks, results));
         const my = picks?.[activeRound]?.[currentUser];
-        if (my?.picks?.length === picksRequired(activeRound)) {
+        if (my?.picks?.length > 0) {
           setSelections(my.picks.map(p => ({id:p.id,name:p.name,flag:p.flag})));
           const ab = my.picks.findIndex(p => p.isArmband);
           setArmbandSlot(ab !== -1 ? ab : 0);
@@ -287,7 +287,7 @@ export default function App() {
   useEffect(() => {
     if (!currentUser || isLoadingData) return;
     const my = allPicks?.[activeRound]?.[currentUser];
-    if (my?.picks?.length === picksRequired(activeRound)) {
+    if (my?.picks?.length > 0) {
       setSelections(my.picks.map(p => ({id:p.id,name:p.name,flag:p.flag})));
       const ab = my.picks.findIndex(p => p.isArmband);
       setArmbandSlot(ab !== -1 ? ab : 0);
