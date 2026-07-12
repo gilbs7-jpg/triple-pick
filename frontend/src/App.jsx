@@ -483,11 +483,34 @@ export default function App() {
     return count;
   };
 
+  // Caps from prior locked gameweeks only — excludes this round's in-progress
+  // selections, so it reflects what's actually already spent.
+  const getLockedUsage = (teamId) => {
+    let count = 0;
+    ROUNDS.forEach(gw => {
+      if (gw === activeRound) return;
+      (allPicks?.[gw]?.[currentUser]?.picks ?? []).forEach(pick => {
+        if (pick?.id === teamId) count++;
+      });
+    });
+    return count;
+  };
+
+  // If the pool doesn't have enough not-yet-capped nations to fill this
+  // round's required picks, a strict 2-cap would force an unavoidable
+  // forfeit through no fault of the player — so the cap is relaxed for this
+  // round only when that's the case (small knockout pools like GW7/GW8 are
+  // where this can actually happen).
+  const roundPool = allFixtures[activeRound] || [];
+  const poolNationIds = [...new Set(roundPool.flatMap(m => [m.home.id, m.away.id]))];
+  const eligibleNationCount = poolNationIds.filter(id => getLockedUsage(id) < 2).length;
+  const capRelaxed = eligibleNationCount < picksRequired(activeRound);
+
   const handleSelectNation = (nation) => {
     if (isFormLocked) return;
     const dup = selections.findIndex(s => s?.id===nation.id);
     if (dup !== -1 && dup !== selectedSlot) return;
-    if (getUsageMetrics(nation.id) >= 2 && selections[selectedSlot]?.id !== nation.id) {
+    if (!capRelaxed && getUsageMetrics(nation.id) >= 2 && selections[selectedSlot]?.id !== nation.id) {
       alert(`${nation.name} has reached the 2-cap limit.`); return;
     }
     const updated = [...selections];
@@ -648,6 +671,12 @@ export default function App() {
                       <p className="text-xs font-semibold text-[#007AFF]">{activeRound === 'GW8' ? 'Final week — the pool is just the Final and the 3rd-place playoff' : 'Semi-final week — the pool is just the 2 semi-finals'}, so pick <strong>2 nations</strong> and captain one of them.</p>
                     </div>
                   )}
+                  {capRelaxed && (
+                    <div className="mb-4 px-3 py-2 bg-[#FF9500]/10 border border-[#FF9500]/25 rounded-xl flex items-center gap-2">
+                      <span className="text-sm">🔓</span>
+                      <p className="text-xs font-semibold text-[#FF9500]">Not enough nations left under your 2-cap limit to fill this round — the cap is relaxed for {ROUND_LABELS[activeRound]} only so you can still make your picks.</p>
+                    </div>
+                  )}
                   {/* Slots */}
                   <div className={`grid grid-cols-1 ${selections.length === 2 ? 'md:grid-cols-2' : 'md:grid-cols-3'} gap-3 mb-4`}>
                     {selections.map((nation, idx) => {
@@ -729,7 +758,7 @@ export default function App() {
                   </div>
 
                   <div><h4 className="font-bold text-[#1C1C1E] mb-1">1. Triple Pick</h4><p>Select exactly 3 nations from the active match pool each gameweek. The last two gameweeks are the exception: the Semi-finals and the Final + 3rd-place playoff each have only 2 matches (4 nations), so you select <span className="font-bold text-black">2 nations</span> — the armband still applies.</p></div>
-                  <div><h4 className="font-bold text-[#1C1C1E] mb-1">2. 2-Cap Limit</h4><p>Any nation can only be selected <span className="font-bold text-black">up to 2 times</span> across the entire tournament.</p></div>
+                  <div><h4 className="font-bold text-[#1C1C1E] mb-1">2. 2-Cap Limit</h4><p>Any nation can only be selected <span className="font-bold text-black">up to 2 times</span> across the entire tournament. Exception: if the knockout pool is too small to give you enough uncapped nations to complete your picks, the cap is relaxed for that gameweek only.</p></div>
                   <div><h4 className="font-bold text-[#1C1C1E] mb-1">3. Armband Ⓒ</h4><p>Nominate one pick as captain. If that nation <strong>wins</strong>, you earn a <span className="font-bold text-[#34C759]">+1 bonus point</span> toward your gameweek score. A draw does not trigger the bonus.</p></div>
                   <div><h4 className="font-bold text-[#1C1C1E] mb-1">4. Head-to-Head</h4>
                     <p className="mb-1">Your gameweek score is compared against your opponent's to decide the fixture:</p>
@@ -879,8 +908,8 @@ export default function App() {
                   {currentPool.map((match) => {
                     const homeUsage = getUsageMetrics(match.home.id);
                     const awayUsage = getUsageMetrics(match.away.id);
-                    const homeMaxed = homeUsage>=2 && !selections.some(s=>s?.id===match.home.id);
-                    const awayMaxed = awayUsage>=2 && !selections.some(s=>s?.id===match.away.id);
+                    const homeMaxed = !capRelaxed && homeUsage>=2 && !selections.some(s=>s?.id===match.home.id);
+                    const awayMaxed = !capRelaxed && awayUsage>=2 && !selections.some(s=>s?.id===match.away.id);
                     const slotOwnsHome = selections[selectedSlot]?.id===match.home.id;
                     const slotOwnsAway = selections[selectedSlot]?.id===match.away.id;
                     return (
