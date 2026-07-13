@@ -69,7 +69,12 @@ export const H2H_FIXTURES = {
   GW4: [['Jason Gilbert','Richard Lee'],['Mark Bentley','Gemma D'],['Lianne Conway','Kieran Smyth'],['Adam Brand','Jamie Brown'],['Jona Moore','Amelia Wood']],
   GW5: [['Jason Gilbert','Adam Brand'],['Richard Lee','Lianne Conway'],['Gemma D','Jona Moore'],['Kieran Smyth','Jamie Brown'],['Amelia Wood','Mark Bentley']],
   GW6: [['Jason Gilbert','Lianne Conway'],['Adam Brand','Amelia Wood'],['Richard Lee','Mark Bentley'],['Jona Moore','Kieran Smyth'],['Jamie Brown','Gemma D']],
-  GW7: [['Jason Gilbert','Jona Moore'],['Lianne Conway','Jamie Brown'],['Adam Brand','Gemma D'],['Amelia Wood','Richard Lee'],['Mark Bentley','Kieran Smyth']],
+  // Amelia Wood vs Richard Lee originally repeated here (already played GW3),
+  // which meant Amelia never faced Lianne/Gemma and Richard never faced
+  // Kieran/Adam. Swapped to Amelia-Gemma / Richard-Adam (both unplayed pairs)
+  // — the only change from the original GW7 lineup, and the one that leaves
+  // every player with exactly one never-played opponent, no duplicates.
+  GW7: [['Jason Gilbert','Jona Moore'],['Lianne Conway','Jamie Brown'],['Amelia Wood','Gemma D'],['Richard Lee','Adam Brand'],['Mark Bentley','Kieran Smyth']],
   // GW8 (Final week) — auto-generated, all five pairings are new vs GW1–GW7.
   // Confirm/adjust to match the intended league schedule.
   GW8: [['Jason Gilbert','Kieran Smyth'],['Gemma D','Richard Lee'],['Jona Moore','Lianne Conway'],['Adam Brand','Mark Bentley'],['Jamie Brown','Amelia Wood']],
