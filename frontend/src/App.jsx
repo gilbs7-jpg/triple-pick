@@ -4,7 +4,7 @@ import {
   PICKS_URL, STATE_URL, JSONBIN_API_KEY,
   ROUNDS, ROUND_LABELS, ROUND_SHORT, ADMIN_USER, fixtureQuery, picksRequired,
   PLAYER_SLUGS, ALL_PLAYERS, H2H_FIXTURES,
-  basePoints, calcPlayerScore, captainWon, calcRoundH2H, buildLeagueTable,
+  basePoints, calcPlayerScore, captainWon, calcRoundH2H, buildLeagueTable, getCapOverflowIds,
 } from './scoring.js';
 
 // ── TLA → FLAG EMOJI ──────────────────────────────────────────────────────────
@@ -114,19 +114,21 @@ function buildAwards(allPicks, allResults) {
         if (data?.forfeited) stat[p].forfeits++;
         return;
       }
+      const overflow = getCapOverflowIds(allPicks, gw, p);
       // captain
       const cap = picks.find(pk => pk.isArmband);
-      if (cap) {
+      if (cap && !overflow.has(cap.id)) {
         if (results[cap.id] === 'W') stat[p].captainWins++;
         else stat[p].captainLosses++;
       }
       // outright wins + uniqueness
       picks.forEach(pick => {
+        if (overflow.has(pick.id)) return; // over-cap pick — doesn't score, doesn't count
         if (results[pick.id] === 'W') stat[p].outrightWins++;
         if (pickCounts[pick.id] === 1) stat[p].uniquePicks++;
       });
       // gw score
-      const score = calcPlayerScore(picks, results);
+      const score = calcPlayerScore(picks, results, overflow);
       if (score !== null) {
         stat[p].gwScores.push(score);
         if (stat[p].bestGw === null || score > stat[p].bestGw) stat[p].bestGw = score;
@@ -135,8 +137,8 @@ function buildAwards(allPicks, allResults) {
 
     // one-point losses: examine each H2H pair
     (H2H_FIXTURES[gw] || []).forEach(([p1, p2]) => {
-      const s1 = calcPlayerScore(allPicks?.[gw]?.[p1]?.picks ?? null, results);
-      const s2 = calcPlayerScore(allPicks?.[gw]?.[p2]?.picks ?? null, results);
+      const s1 = calcPlayerScore(allPicks?.[gw]?.[p1]?.picks ?? null, results, getCapOverflowIds(allPicks, gw, p1));
+      const s2 = calcPlayerScore(allPicks?.[gw]?.[p2]?.picks ?? null, results, getCapOverflowIds(allPicks, gw, p2));
       if (s1 !== null && s2 !== null) {
         if (s1 - s2 === 1) stat[p2].oneeptLosses++;
         else if (s2 - s1 === 1) stat[p1].oneeptLosses++;
@@ -557,7 +559,7 @@ export default function App() {
   const getPlayerScore = (playerName, gw) => {
     const results = allResults?.[gw];
     if (!results) return null;
-    return calcPlayerScore(allPicks?.[gw]?.[playerName]?.picks ?? null, results);
+    return calcPlayerScore(allPicks?.[gw]?.[playerName]?.picks ?? null, results, getCapOverflowIds(allPicks, gw, playerName));
   };
 
   // ── Guard screens ─────────────────────────────────────────────────────────
@@ -674,7 +676,7 @@ export default function App() {
                   {capRelaxed && (
                     <div className="mb-4 px-3 py-2 bg-[#FF9500]/10 border border-[#FF9500]/25 rounded-xl flex items-center gap-2">
                       <span className="text-sm">🔓</span>
-                      <p className="text-xs font-semibold text-[#FF9500]">Not enough nations left under your 2-cap limit to fill this round — the cap is relaxed for {ROUND_LABELS[activeRound]} only so you can still make your picks.</p>
+                      <p className="text-xs font-semibold text-[#FF9500]">Not enough nations left under your 2-cap limit to fill this round — the cap is relaxed for {ROUND_LABELS[activeRound]} so you can still submit picks and avoid a forfeit. Any pick over your cap won't score, though — pick it to complete your slots, but it earns nothing.</p>
                     </div>
                   )}
                   {/* Slots */}
@@ -695,7 +697,11 @@ export default function App() {
                             {nation ? (
                               <><span className="text-3xl">{nation.flag}</span>
                               <div><p className="text-sm font-bold text-[#1C1C1E]">{nation.name}</p>
-                              <p className="text-[10px] font-mono text-[#8E8E93]">Caps Used: {getUsageMetrics(nation.id)}/2</p></div></>
+                              {getLockedUsage(nation.id) >= 2 ? (
+                                <p className="text-[10px] font-bold text-[#FF9500]">⚠️ Over cap — won't score</p>
+                              ) : (
+                                <p className="text-[10px] font-mono text-[#8E8E93]">Caps Used: {getUsageMetrics(nation.id)}/2</p>
+                              )}</div></>
                             ) : <p className="text-xs italic text-[#AEAEB2] font-medium">Click to assign team...</p>}
                           </div>
                           <div className="flex items-center justify-between pt-2 border-t border-dashed border-[#E5E5EA]">
@@ -758,7 +764,7 @@ export default function App() {
                   </div>
 
                   <div><h4 className="font-bold text-[#1C1C1E] mb-1">1. Triple Pick</h4><p>Select exactly 3 nations from the active match pool each gameweek. The last two gameweeks are the exception: the Semi-finals and the Final + 3rd-place playoff each have only 2 matches (4 nations), so you select <span className="font-bold text-black">2 nations</span> — the armband still applies.</p></div>
-                  <div><h4 className="font-bold text-[#1C1C1E] mb-1">2. 2-Cap Limit</h4><p>Any nation can only be selected <span className="font-bold text-black">up to 2 times</span> across the entire tournament. Exception: if the knockout pool is too small to give you enough uncapped nations to complete your picks, the cap is relaxed for that gameweek only.</p></div>
+                  <div><h4 className="font-bold text-[#1C1C1E] mb-1">2. 2-Cap Limit</h4><p>Any nation can only be selected <span className="font-bold text-black">up to 2 times</span> across the entire tournament. Exception: if the knockout pool is too small to give you enough uncapped nations to complete your picks, the cap is relaxed for that gameweek only so you can still submit — but any pick beyond your cap <span className="font-bold text-black">scores zero</span> (no points, no captain bonus). It just fills the slot so you're not forced into a forfeit.</p></div>
                   <div><h4 className="font-bold text-[#1C1C1E] mb-1">3. Armband Ⓒ</h4><p>Nominate one pick as captain. If that nation <strong>wins</strong>, you earn a <span className="font-bold text-[#34C759]">+1 bonus point</span> toward your gameweek score. A draw does not trigger the bonus.</p></div>
                   <div><h4 className="font-bold text-[#1C1C1E] mb-1">4. Head-to-Head</h4>
                     <p className="mb-1">Your gameweek score is compared against your opponent's to decide the fixture:</p>
@@ -972,16 +978,18 @@ export default function App() {
                     const score2 = getPlayerScore(p2name, activeRound);
                     const p1forfeited = roundClosed && !allPicks?.[activeRound]?.[p1name]?.picks?.length;
                     const p2forfeited = roundClosed && !allPicks?.[activeRound]?.[p2name]?.picks?.length;
+                    const overflow1 = getCapOverflowIds(allPicks, activeRound, p1name);
+                    const overflow2 = getCapOverflowIds(allPicks, activeRound, p2name);
 
-                    const renderPicks = (pd, forfeited) => {
+                    const renderPicks = (pd, forfeited, overflow) => {
                       if (forfeited) return <span className="text-[10px] font-bold text-[#FF3B30] bg-[#FF3B30]/10 px-1.5 py-0.5 rounded">FORFEIT</span>;
                       if (pd.status==='pending')   return <span className="text-[10px] italic text-[#AEAEB2]">Pending</span>;
                       if (pd.status==='submitted') return <span className="text-[10px] font-semibold text-[#34C759]">Submitted ✓</span>;
                       return (
                         <div className="flex gap-1 flex-wrap">
                           {pd.display.map((pick,pIdx) => (
-                            <span key={pIdx} title={pick.name}
-                              className={`px-1.5 py-0.5 rounded text-[13px] bg-[#F2F2F7] flex items-center gap-0.5 ${pick.isArmband ? 'ring-1 ring-[#FF9500]' : ''}`}>
+                            <span key={pIdx} title={overflow.has(pick.id) ? `${pick.name} — over cap, doesn't score` : pick.name}
+                              className={`px-1.5 py-0.5 rounded text-[13px] bg-[#F2F2F7] flex items-center gap-0.5 ${pick.isArmband ? 'ring-1 ring-[#FF9500]' : ''} ${overflow.has(pick.id) ? 'opacity-40 line-through' : ''}`}>
                               {pick.flag}{pick.isArmband && <span className="text-[9px] text-[#FF9500] font-black">Ⓒ</span>}
                             </span>
                           ))}
@@ -1003,7 +1011,7 @@ export default function App() {
                             <p className={`text-xs truncate ${p1name===currentUser ? 'font-bold' : 'font-medium'}`}>{p1name}</p>
                           </div>
                           <div className="flex items-center gap-2 flex-shrink-0">
-                            {renderPicks(p1data,p1forfeited)}
+                            {renderPicks(p1data,p1forfeited,overflow1)}
                             <span className="font-mono text-sm font-bold text-[#1C1C1E] min-w-[20px] text-right">{score1!==null?score1:'—'}</span>
                           </div>
                         </div>
@@ -1018,7 +1026,7 @@ export default function App() {
                             <p className={`text-xs truncate ${p2name===currentUser ? 'font-bold' : 'font-medium'}`}>{p2name}</p>
                           </div>
                           <div className="flex items-center gap-2 flex-shrink-0">
-                            {renderPicks(p2data,p2forfeited)}
+                            {renderPicks(p2data,p2forfeited,overflow2)}
                             <span className="font-mono text-sm font-bold text-[#1C1C1E] min-w-[20px] text-right">{score2!==null?score2:'—'}</span>
                           </div>
                         </div>

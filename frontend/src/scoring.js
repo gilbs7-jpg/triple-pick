@@ -87,9 +87,33 @@ export function basePoints(result) {
   return 0;
 }
 
-export function calcPlayerScore(picks, results) {
+// A pick only exists because the 2-cap limit was relaxed (see App.jsx's
+// capRelaxed) if that nation was already at 2/2 from the player's OTHER
+// gameweeks. Those forced-over-cap picks shouldn't score — the relax rule
+// exists purely to let the player complete their required picks and avoid an
+// unfair auto-forfeit, not to grant an extra go at a nation they'd already
+// used twice. Returns the set of nation ids in `gw` that should score 0 for
+// `player`.
+export function getCapOverflowIds(allPicks, gw, player) {
+  const picks = allPicks?.[gw]?.[player]?.picks ?? [];
+  const overflow = new Set();
+  picks.forEach(pick => {
+    let priorUses = 0;
+    ROUNDS.forEach(g => {
+      if (g === gw) return;
+      (allPicks?.[g]?.[player]?.picks ?? []).forEach(p => {
+        if (p.id === pick.id) priorUses++;
+      });
+    });
+    if (priorUses >= 2) overflow.add(pick.id);
+  });
+  return overflow;
+}
+
+export function calcPlayerScore(picks, results, overflowIds) {
   if (!picks || picks.length === 0) return null;
   return picks.reduce((sum, pick) => {
+    if (overflowIds?.has(pick.id)) return sum; // over-cap pick — doesn't score
     const result = results?.[pick.id] ?? null;
     let pts = basePoints(result);
     if (pick.isArmband && result === 'W') pts += 1;
@@ -97,10 +121,11 @@ export function calcPlayerScore(picks, results) {
   }, 0);
 }
 
-export function captainWon(picks, results) {
+export function captainWon(picks, results, overflowIds) {
   if (!picks || picks.length === 0) return false;
   const cap = picks.find(p => p.isArmband);
   if (!cap) return false;
+  if (overflowIds?.has(cap.id)) return false; // over-cap pick — no captain bonus either
   return (results?.[cap.id] ?? null) === 'W';
 }
 
@@ -110,8 +135,10 @@ export function calcRoundH2H(allPicks, results, gwKey) {
   fixtures.forEach(([p1, p2]) => {
     const picks1 = allPicks?.[gwKey]?.[p1]?.picks ?? null;
     const picks2 = allPicks?.[gwKey]?.[p2]?.picks ?? null;
-    const score1 = calcPlayerScore(picks1, results);
-    const score2 = calcPlayerScore(picks2, results);
+    const overflow1 = getCapOverflowIds(allPicks, gwKey, p1);
+    const overflow2 = getCapOverflowIds(allPicks, gwKey, p2);
+    const score1 = calcPlayerScore(picks1, results, overflow1);
+    const score2 = calcPlayerScore(picks2, results, overflow2);
     const f1 = score1 === null, f2 = score2 === null;
     let h1 = 0, h2 = 0;
     let o1 = 'L', o2 = 'L';
@@ -122,8 +149,8 @@ export function calcRoundH2H(allPicks, results, gwKey) {
     }
     else if (f1 && !f2) { h2=3; o1='L'; o2='W'; }
     else if (!f1 && f2) { h1=3; o1='W'; o2='L'; }
-    if (!f1 && captainWon(picks1, results)) h1 += 1;
-    if (!f2 && captainWon(picks2, results)) h2 += 1;
+    if (!f1 && captainWon(picks1, results, overflow1)) h1 += 1;
+    if (!f2 && captainWon(picks2, results, overflow2)) h2 += 1;
     out[p1] = { h2hPts:h1, score:score1??0, forfeited:f1, outcome:o1 };
     out[p2] = { h2hPts:h2, score:score2??0, forfeited:f2, outcome:o2 };
   });
@@ -145,8 +172,9 @@ export function buildLeagueTable(allPicks, allResults) {
       if (data.outcome==='W') table[player].w++;
       else if (data.outcome==='D') table[player].d++;
       else table[player].l++;
+      const overflow = getCapOverflowIds(allPicks, gw, player);
       (allPicks?.[gw]?.[player]?.picks ?? []).forEach(pick => {
-        if (results[pick.id]==='W') table[player].winsSelected++;
+        if (!overflow.has(pick.id) && results[pick.id]==='W') table[player].winsSelected++;
       });
     });
   });
