@@ -498,22 +498,19 @@ export default function App() {
     return count;
   };
 
-  // If the pool doesn't have enough not-yet-capped nations to fill this
-  // round's required picks, a strict 2-cap would force an unavoidable
-  // forfeit through no fault of the player — so the cap is relaxed for this
-  // round only when that's the case (small knockout pools like GW7/GW8 are
-  // where this can actually happen).
-  const roundPool = allFixtures[activeRound] || [];
-  const poolNationIds = [...new Set(roundPool.flatMap(m => [m.home.id, m.away.id]))];
-  const eligibleNationCount = poolNationIds.filter(id => getLockedUsage(id) < 2).length;
-  const capRelaxed = eligibleNationCount < picksRequired(activeRound);
-
-  const handleSelectNation = (nation) => {
+  // The 2-cap is a scoring rule, not a selection rule: any nation can always
+  // be picked (getCapOverflowIds in scoring.js zeroes out the points for a
+  // pick beyond the cap at score time) so a small knockout pool can never
+  // lock a player out of completing their picks. What IS blocked at
+  // selection time is picking both teams from the same fixture — that's an
+  // always-one-loses, self-cancelling choice with no strategic point to it.
+  const handleSelectNation = (nation, opponentId) => {
     if (isFormLocked) return;
     const dup = selections.findIndex(s => s?.id===nation.id);
     if (dup !== -1 && dup !== selectedSlot) return;
-    if (!capRelaxed && getUsageMetrics(nation.id) >= 2 && selections[selectedSlot]?.id !== nation.id) {
-      alert(`${nation.name} has reached the 2-cap limit.`); return;
+    const opponentPicked = opponentId && selections.some((s, idx) => idx !== selectedSlot && s?.id === opponentId);
+    if (opponentPicked) {
+      alert(`You can't pick both teams from the same fixture.`); return;
     }
     const updated = [...selections];
     updated[selectedSlot] = { id:nation.id, name:nation.name, flag:nation.flag };
@@ -673,10 +670,10 @@ export default function App() {
                       <p className="text-xs font-semibold text-[#007AFF]">{activeRound === 'GW8' ? 'Final week — the pool is just the Final and the 3rd-place playoff' : 'Semi-final week — the pool is just the 2 semi-finals'}, so pick <strong>2 nations</strong> and captain one of them.</p>
                     </div>
                   )}
-                  {capRelaxed && (
+                  {selections.some(s => s && getLockedUsage(s.id) >= 2) && (
                     <div className="mb-4 px-3 py-2 bg-[#FF9500]/10 border border-[#FF9500]/25 rounded-xl flex items-center gap-2">
-                      <span className="text-sm">🔓</span>
-                      <p className="text-xs font-semibold text-[#FF9500]">Not enough nations left under your 2-cap limit to fill this round — the cap is relaxed for {ROUND_LABELS[activeRound]} so you can still submit picks and avoid a forfeit. Any pick over your cap won't score, though — pick it to complete your slots, but it earns nothing.</p>
+                      <span className="text-sm">⚠️</span>
+                      <p className="text-xs font-semibold text-[#FF9500]">One or more of your picks is already at your 2-cap — it still fills the slot, but it won't score any points.</p>
                     </div>
                   )}
                   {/* Slots */}
@@ -763,8 +760,8 @@ export default function App() {
                     <p className="mt-2 text-[#8E8E93]">It's simple to play, but the captain calls, the 2-cap limit, and who you're drawn against each week make it a proper tactical battle.</p>
                   </div>
 
-                  <div><h4 className="font-bold text-[#1C1C1E] mb-1">1. Triple Pick</h4><p>Select exactly 3 nations from the active match pool each gameweek. The last two gameweeks are the exception: the Semi-finals and the Final + 3rd-place playoff each have only 2 matches (4 nations), so you select <span className="font-bold text-black">2 nations</span> — the armband still applies.</p></div>
-                  <div><h4 className="font-bold text-[#1C1C1E] mb-1">2. 2-Cap Limit</h4><p>Any nation can only be selected <span className="font-bold text-black">up to 2 times</span> across the entire tournament. Exception: if the knockout pool is too small to give you enough uncapped nations to complete your picks, the cap is relaxed for that gameweek only so you can still submit — but any pick beyond your cap <span className="font-bold text-black">scores zero</span> (no points, no captain bonus). It just fills the slot so you're not forced into a forfeit.</p></div>
+                  <div><h4 className="font-bold text-[#1C1C1E] mb-1">1. Triple Pick</h4><p>Select exactly 3 nations from the active match pool each gameweek. The last two gameweeks are the exception: the Semi-finals and the Final + 3rd-place playoff each have only 2 matches (4 nations), so you select <span className="font-bold text-black">2 nations</span> — the armband still applies. You can't pick both teams from the same fixture.</p></div>
+                  <div><h4 className="font-bold text-[#1C1C1E] mb-1">2. 2-Cap Limit</h4><p>Any nation can only <span className="font-bold text-black">score</span> up to 2 times across the entire tournament. You can still select it a 3rd+ time if you want (handy when a small knockout pool leaves you short of options) — it fills the slot, but that pick <span className="font-bold text-black">scores zero</span> (no points, no captain bonus).</p></div>
                   <div><h4 className="font-bold text-[#1C1C1E] mb-1">3. Armband Ⓒ</h4><p>Nominate one pick as captain. If that nation <strong>wins</strong>, you earn a <span className="font-bold text-[#34C759]">+1 bonus point</span> toward your gameweek score. A draw does not trigger the bonus.</p></div>
                   <div><h4 className="font-bold text-[#1C1C1E] mb-1">4. Head-to-Head</h4>
                     <p className="mb-1">Your gameweek score is compared against your opponent's to decide the fixture:</p>
@@ -914,23 +911,27 @@ export default function App() {
                   {currentPool.map((match) => {
                     const homeUsage = getUsageMetrics(match.home.id);
                     const awayUsage = getUsageMetrics(match.away.id);
-                    const homeMaxed = !capRelaxed && homeUsage>=2 && !selections.some(s=>s?.id===match.home.id);
-                    const awayMaxed = !capRelaxed && awayUsage>=2 && !selections.some(s=>s?.id===match.away.id);
                     const slotOwnsHome = selections[selectedSlot]?.id===match.home.id;
                     const slotOwnsAway = selections[selectedSlot]?.id===match.away.id;
+                    // Can't pick both teams from the same fixture — if the other side
+                    // is already sitting in a different slot this round, this side is off.
+                    const homeBlocked = selections.some((s,idx) => idx!==selectedSlot && s?.id===match.away.id);
+                    const awayBlocked = selections.some((s,idx) => idx!==selectedSlot && s?.id===match.home.id);
                     return (
                       <div key={match.matchId} className="bg-white border border-[#E5E5EA] rounded-xl p-3 flex flex-col justify-between relative overflow-hidden pl-4">
                         <div className="absolute top-0 bottom-0 left-0 w-[3px] bg-[#E5E5EA]" />
                         <div className="flex items-center justify-between w-full">
-                          <button disabled={isFormLocked||homeMaxed} onClick={() => handleSelectNation(match.home)}
-                            className={`flex-1 p-2 rounded-lg flex items-center gap-2.5 transition-all text-left ${slotOwnsHome ? 'bg-[#007AFF]/10 border border-[#007AFF]/30 font-bold' : homeMaxed ? 'opacity-30' : 'hover:bg-[#F2F2F7]'}`}>
+                          <button disabled={isFormLocked||homeBlocked} onClick={() => handleSelectNation(match.home, match.away.id)}
+                            className={`flex-1 p-2 rounded-lg flex items-center gap-2.5 transition-all text-left ${slotOwnsHome ? 'bg-[#007AFF]/10 border border-[#007AFF]/30 font-bold' : homeBlocked ? 'opacity-30' : 'hover:bg-[#F2F2F7]'}`}>
                             <span className="text-2xl">{match.home.flag}</span>
-                            <div className="truncate"><p className="text-xs font-bold text-[#1C1C1E] truncate">{match.home.name}</p><p className="text-[9px] font-mono text-[#8E8E93]">Caps: {homeUsage}/2</p></div>
+                            <div className="truncate"><p className="text-xs font-bold text-[#1C1C1E] truncate">{match.home.name}</p>
+                              {getLockedUsage(match.home.id) >= 2 ? <p className="text-[9px] font-bold text-[#FF9500]">⚠️ won't score</p> : <p className="text-[9px] font-mono text-[#8E8E93]">Caps: {homeUsage}/2</p>}</div>
                           </button>
                           <div className="px-3 text-[10px] font-black text-[#AEAEB2] font-mono">VS</div>
-                          <button disabled={isFormLocked||awayMaxed} onClick={() => handleSelectNation(match.away)}
-                            className={`flex-1 p-2 rounded-lg flex items-center justify-end gap-2.5 transition-all text-right ${slotOwnsAway ? 'bg-[#007AFF]/10 border border-[#007AFF]/30 font-bold' : awayMaxed ? 'opacity-30' : 'hover:bg-[#F2F2F7]'}`}>
-                            <div className="truncate"><p className="text-xs font-bold text-[#1C1C1E] truncate">{match.away.name}</p><p className="text-[9px] font-mono text-[#8E8E93]">Caps: {awayUsage}/2</p></div>
+                          <button disabled={isFormLocked||awayBlocked} onClick={() => handleSelectNation(match.away, match.home.id)}
+                            className={`flex-1 p-2 rounded-lg flex items-center justify-end gap-2.5 transition-all text-right ${slotOwnsAway ? 'bg-[#007AFF]/10 border border-[#007AFF]/30 font-bold' : awayBlocked ? 'opacity-30' : 'hover:bg-[#F2F2F7]'}`}>
+                            <div className="truncate"><p className="text-xs font-bold text-[#1C1C1E] truncate">{match.away.name}</p>
+                              {getLockedUsage(match.away.id) >= 2 ? <p className="text-[9px] font-bold text-[#FF9500]">⚠️ won't score</p> : <p className="text-[9px] font-mono text-[#8E8E93]">Caps: {awayUsage}/2</p>}</div>
                             <span className="text-2xl">{match.away.flag}</span>
                           </button>
                         </div>
