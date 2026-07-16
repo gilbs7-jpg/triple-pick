@@ -75,12 +75,21 @@ export default async function handler(req, res) {
       fetch(STATE_URL, { headers: { 'X-Master-Key': JSONBIN_API_KEY } }),
       fetch(PICKS_URL, { headers: { 'X-Master-Key': JSONBIN_API_KEY } }),
     ]);
+    // Abort (don't default to empty) if either read failed — a rate-limited
+    // GET treated as an empty bin would make this job write back a state/table
+    // computed as if nobody had ever picked, clobbering the real data.
+    if (!stateRes.ok || !picksRes.ok) {
+      return res.status(502).json({ error: `JSONBin read failed (state ${stateRes.status}, picks ${picksRes.status}) — aborting without writing` });
+    }
     const stateData = await stateRes.json();
     const picksData = await picksRes.json();
-    const state = stateData.record || { results: {}, fixtures: {}, leagueTable: {} };
+    if (!stateData.record || !picksData.record) {
+      return res.status(502).json({ error: 'JSONBin response missing record — aborting without writing' });
+    }
+    const state = stateData.record;
     if (!state.results)  state.results  = {};
     if (!state.fixtures) state.fixtures = {};
-    const allPicks = picksData.record?.playerPicks ?? {};
+    const allPicks = picksData.record.playerPicks ?? {};
 
     const before = JSON.stringify(state.results);
     const now = Date.now();

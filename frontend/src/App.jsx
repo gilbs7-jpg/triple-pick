@@ -186,6 +186,24 @@ function buildAwards(allPicks, allResults) {
 // Distinct colors for chart lines
 const CHART_COLORS = ['#007AFF','#FF3B30','#34C759','#FF9500','#5856D6','#AF52DE','#FF2D55','#5AC8FA','#FFCC00','#8E8E93'];
 
+// Fetch a JSONBin bin and REFUSE to treat a bad response as an empty bin.
+// JSONBin rate-limit (429) and error responses still carry a JSON body, just
+// without a `record` — the old code coerced that to "no picks", which made
+// every player render as FORFEIT and, far worse, let a save PUT an empty
+// master back over everyone's data. Retries once on failure before throwing.
+async function fetchBin(url, attempt = 0) {
+  const res = await fetch(url, {headers:{'X-Master-Key':JSONBIN_API_KEY}});
+  const data = res.ok ? await res.json() : null;
+  if (!data || !data.record || typeof data.record !== 'object') {
+    if (attempt < 1) {
+      await new Promise(r => setTimeout(r, 1500));
+      return fetchBin(url, attempt + 1);
+    }
+    throw new Error(`JSONBin fetch failed (HTTP ${res.status}) for ${url}`);
+  }
+  return data;
+}
+
 // 1 hour before the earliest kickoff. Returns null if no fixtures cached.
 function deadlineFromFixtures(fixtures) {
   if (!fixtures || fixtures.length === 0) return null;
@@ -214,6 +232,8 @@ export default function App() {
   const [allFixtures,    setAllFixtures]    = useState({}); // { GW1: [ {id,name,flag,...} ], ... }
   const [leagueTable,    setLeagueTable]    = useState([]);
   const [isLoadingData,  setIsLoadingData]  = useState(true);
+  const [loadError,      setLoadError]      = useState(false);
+  const [loadAttempt,    setLoadAttempt]    = useState(0);
 
   // Admin state
   const [roundResults,   setRoundResults]   = useState({});
@@ -251,39 +271,37 @@ export default function App() {
   // ── Load all data ─────────────────────────────────────────────────────────
   useEffect(() => {
     if (!currentUser) return;
-    async function loadAll() {
-      setIsLoadingData(true);
-      try {
-        const [pr, sr] = await Promise.all([
-          fetch(PICKS_URL, {headers:{'X-Master-Key':JSONBIN_API_KEY}}),
-          fetch(STATE_URL, {headers:{'X-Master-Key':JSONBIN_API_KEY}}),
-        ]);
-        const pd = await pr.json();
-        const sd = await sr.json();
-        const picks    = pd.record?.playerPicks ?? {};
-        const results  = sd.record?.results     ?? {};
-        const fixtures = sd.record?.fixtures    ?? {};
-        setAllPicks(picks);
-        setAllResults(results);
-        setAllFixtures(fixtures);
-        setLeagueTable(buildLeagueTable(picks, results));
-        const my = picks?.[activeRound]?.[currentUser];
-        if (my?.picks?.length > 0) {
-          setSelections(my.picks.map(p => ({id:p.id,name:p.name,flag:p.flag})));
-          const ab = my.picks.findIndex(p => p.isArmband);
-          setArmbandSlot(ab !== -1 ? ab : 0);
-          setIsFormLocked(true);
-        }
-        setRoundResults(results?.[activeRound] ?? {});
-      } catch(e) {
-        console.error('Load failed', e);
-        setLeagueTable(ALL_PLAYERS.map(name => ({name,played:0,w:0,d:0,l:0,h2hPts:0,totalScore:0,winsSelected:0})));
-      } finally {
-        setIsLoadingData(false);
-      }
-    }
     loadAll();
-  }, [currentUser]); // eslint-disable-line
+  }, [currentUser, loadAttempt]); // eslint-disable-line
+
+  async function loadAll() {
+    setIsLoadingData(true);
+    setLoadError(false);
+    try {
+      const [pd, sd] = await Promise.all([fetchBin(PICKS_URL), fetchBin(STATE_URL)]);
+      const picks    = pd.record.playerPicks ?? {};
+      const results  = sd.record.results     ?? {};
+      const fixtures = sd.record.fixtures    ?? {};
+      setAllPicks(picks);
+      setAllResults(results);
+      setAllFixtures(fixtures);
+      setLeagueTable(buildLeagueTable(picks, results));
+      const my = picks?.[activeRound]?.[currentUser];
+      if (my?.picks?.length > 0) {
+        setSelections(my.picks.map(p => ({id:p.id,name:p.name,flag:p.flag})));
+        const ab = my.picks.findIndex(p => p.isArmband);
+        setArmbandSlot(ab !== -1 ? ab : 0);
+        setIsFormLocked(true);
+      }
+      setRoundResults(results?.[activeRound] ?? {});
+    } catch(e) {
+      console.error('Load failed', e);
+      setLoadError(true);
+      setLeagueTable(ALL_PLAYERS.map(name => ({name,played:0,w:0,d:0,l:0,h2hPts:0,totalScore:0,winsSelected:0})));
+    } finally {
+      setIsLoadingData(false);
+    }
+  }
 
   // ── Re-restore picks on round change ─────────────────────────────────────
   useEffect(() => {
@@ -333,9 +351,11 @@ export default function App() {
     if (selections.includes(null)) { alert(`Please fill all ${selections.length} slots before locking.`); return; }
     try {
       setIsSaving(true);
-      const res  = await fetch(PICKS_URL, {headers:{'X-Master-Key':JSONBIN_API_KEY}});
-      const data = await res.json();
-      const master = data.record || {playerPicks:{}};
+      // fetchBin throws (rather than yielding an empty record) if JSONBin
+      // errors/rate-limits — otherwise this PUT would overwrite everyone's
+      // picks with a nearly-empty master. Never write on a failed read.
+      const data = await fetchBin(PICKS_URL);
+      const master = data.record;
       if (!master.playerPicks) master.playerPicks = {};
       if (!master.playerPicks[activeRound]) master.playerPicks[activeRound] = {};
       master.playerPicks[activeRound][currentUser] = {
@@ -385,10 +405,9 @@ export default function App() {
         });
       });
 
-      // Save to Bin 2 under fixtures[gw]
-      const sres = await fetch(STATE_URL, {headers:{'X-Master-Key':JSONBIN_API_KEY}});
-      const sdata = await sres.json();
-      const state = sdata.record || {results:{},fixtures:{},leagueTable:{}};
+      // Save to Bin 2 under fixtures[gw] — never write on a failed read
+      const sdata = await fetchBin(STATE_URL);
+      const state = sdata.record;
       if (!state.fixtures) state.fixtures = {};
       state.fixtures[activeRound] = pool;
       await fetch(STATE_URL, {
@@ -447,9 +466,10 @@ export default function App() {
     if (Object.keys(roundResults).length === 0) { alert('No results to calculate. Fetch or enter first.'); return; }
     try {
       setIsCalculating(true);
-      const res  = await fetch(STATE_URL, {headers:{'X-Master-Key':JSONBIN_API_KEY}});
-      const data = await res.json();
-      const state = data.record || {results:{},fixtures:{},leagueTable:{}};
+      // Never write on a failed read — a rate-limited GET here would wipe
+      // every gameweek's results and fixtures from the state bin.
+      const data = await fetchBin(STATE_URL);
+      const state = data.record;
       if (!state.results) state.results = {};
       state.results[activeRound] = roundResults;
       const newTable = buildLeagueTable(allPicks, state.results);
@@ -572,6 +592,22 @@ export default function App() {
   if (!currentUser) return (
     <div className="min-h-screen bg-[#F4F4F9] flex items-center justify-center">
       <p className="text-xs text-[#8E8E93] font-mono animate-pulse">Loading...</p>
+    </div>
+  );
+  // Data failed to load (e.g. JSONBin rate limit). Show an explicit error
+  // instead of rendering the app on empty state, where every player would
+  // wrongly appear as FORFEIT and saves could misfire.
+  if (loadError && !isLoadingData) return (
+    <div className="min-h-screen bg-[#F4F4F9] flex items-center justify-center p-4">
+      <div className="bg-white rounded-2xl border border-[#FF9500]/30 p-6 max-w-sm w-full shadow-xl text-center">
+        <div className="w-12 h-12 bg-[#FF9500]/10 rounded-full flex items-center justify-center mx-auto text-xl">📡</div>
+        <h2 className="text-base font-bold text-[#1C1C1E] mt-4">Couldn't load league data</h2>
+        <p className="text-xs text-[#8E8E93] mt-2">The data server didn't respond (it may be briefly rate-limited). Your picks are safe — nothing has been lost. Try again in a few seconds.</p>
+        <button onClick={() => setLoadAttempt(a => a + 1)}
+          className="mt-4 w-full py-2.5 bg-[#1C1C1E] text-white rounded-xl font-bold text-xs hover:bg-black transition-all">
+          🔄 Retry
+        </button>
+      </div>
     </div>
   );
 
