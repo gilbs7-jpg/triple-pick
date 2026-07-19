@@ -39,6 +39,12 @@ export const GW_TO_QUERY = {
 export const PICKS_PER_ROUND = { GW7: 2, GW8: 2 };
 export const picksRequired = (gw) => PICKS_PER_ROUND[gw] ?? 3;
 
+// ── TOURNAMENT CHAMPION ───────────────────────────────────────────────────────
+// The full-time whistle has gone on World Cup '26: Amelia Wood topped the
+// table after GW8 and is the tournament champion. Set to null pre-tournament
+// (or for a future edition) to hide all champion UI.
+export const TOURNAMENT_CHAMPION = 'Amelia Wood';
+
 // Build the football-data.org query string for a gameweek's mapping.
 export const fixtureQuery = (gw) => {
   const q = GW_TO_QUERY[gw];

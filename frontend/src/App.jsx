@@ -3,7 +3,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import {
   PICKS_URL, STATE_URL, JSONBIN_API_KEY,
   ROUNDS, ROUND_LABELS, ROUND_SHORT, ADMIN_USER, fixtureQuery, picksRequired,
-  PLAYER_SLUGS, ALL_PLAYERS, H2H_FIXTURES,
+  PLAYER_SLUGS, ALL_PLAYERS, H2H_FIXTURES, TOURNAMENT_CHAMPION,
   basePoints, calcPlayerScore, captainWon, calcRoundH2H, buildLeagueTable, getCapOverflowIds,
 } from './scoring.js';
 
@@ -642,6 +642,33 @@ export default function App() {
         </div>
       </header>
 
+      {/* CHAMPION BANNER */}
+      {TOURNAMENT_CHAMPION && (() => {
+        const champRow = leagueTable.find(r => r.name === TOURNAMENT_CHAMPION);
+        return (
+          <section className="max-w-4xl mx-auto mb-6 bg-white rounded-2xl border border-[#FF9500]/30 p-5 shadow-[0_2px_12px_rgba(0,0,0,0.03)] relative overflow-hidden">
+            <div className="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-[#FFD60A] via-[#FF9500] to-[#FFD60A]" />
+            <div className="flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left">
+              <span className="text-5xl">🏆</span>
+              <div className="flex-1">
+                <p className="text-[10px] font-black uppercase tracking-wider text-[#FF9500]">World Cup '26 · Tournament Champion</p>
+                <h2 className="text-xl font-bold text-[#1C1C1E] mt-0.5">{TOURNAMENT_CHAMPION} 👑</h2>
+                <p className="text-xs text-[#636366] mt-1">
+                  {currentUser === TOURNAMENT_CHAMPION
+                    ? 'Take a bow, champ — you outpicked the lot of them across all 8 gameweeks and finished top when it mattered. 🎉'
+                    : `The full-time whistle has gone — ${TOURNAMENT_CHAMPION} finishes top of the table and wins the whole tournament. Congratulations! 🎉`}
+                </p>
+                {champRow && champRow.played > 0 && (
+                  <p className="text-[10px] font-mono text-[#8E8E93] mt-1.5">
+                    Final record: {champRow.w}W {champRow.d}D {champRow.l}L · {champRow.h2hPts} league pts · {champRow.totalScore} pick pts
+                  </p>
+                )}
+              </div>
+            </div>
+          </section>
+        );
+      })()}
+
       <main className="max-w-4xl mx-auto">
 
         {/* ════════ STRATEGY DESK ════════ */}
@@ -1077,7 +1104,9 @@ export default function App() {
             {/* League table */}
             <section className="bg-white rounded-2xl border border-[#E5E5EA] shadow-[0_4px_20px_rgba(0,0,0,0.02)] overflow-hidden">
               <div className="p-4 border-b border-[#E5E5EA]">
-                <h3 className="text-xs font-bold text-[#8E8E93] uppercase tracking-wider">Official Tournament Standings</h3>
+                <h3 className="text-xs font-bold text-[#8E8E93] uppercase tracking-wider">
+                  Official Tournament Standings{TOURNAMENT_CHAMPION ? ' — Final' : ''}
+                </h3>
               </div>
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
@@ -1095,11 +1124,12 @@ export default function App() {
                   </thead>
                   <tbody className="divide-y divide-[#E5E5EA] text-xs font-medium text-[#1C1C1E]">
                     {leagueTable.map((row,idx) => (
-                      <tr key={row.name} className={`hover:bg-[#F2F2F7]/40 ${row.name===currentUser ? 'bg-[#007AFF]/5 font-semibold' : ''}`}>
-                        <td className="py-3 px-4 text-center font-mono font-bold text-[#636366]">{idx+1}</td>
+                      <tr key={row.name} className={`hover:bg-[#F2F2F7]/40 ${row.name===TOURNAMENT_CHAMPION ? 'bg-[#FF9500]/5 font-semibold' : row.name===currentUser ? 'bg-[#007AFF]/5 font-semibold' : ''}`}>
+                        <td className="py-3 px-4 text-center font-mono font-bold text-[#636366]">{row.name===TOURNAMENT_CHAMPION ? '👑' : idx+1}</td>
                         <td className="py-3 px-4 font-bold">
                           <div className="flex items-center gap-1.5">
                             {row.name}
+                            {row.name===TOURNAMENT_CHAMPION && <span className="bg-[#FF9500] text-white text-[8px] font-black px-1.5 py-0.5 rounded-full uppercase">Champion</span>}
                             {row.name===currentUser && <span className="bg-[#007AFF] text-white text-[8px] font-black px-1.5 py-0.5 rounded-full">YOU</span>}
                           </div>
                         </td>
@@ -1177,10 +1207,34 @@ export default function App() {
                 { key:'forfeitKing',      emoji:'🥄', title:'Wooden Spoon',       desc:'Most missed deadlines',       suffix:'forfeits' },
                 { key:'captainChaos',     emoji:'🌪️', title:'Captain Chaos',      desc:'Worst armband luck',          suffix:'fails' },
               ];
+              const tournamentOver = !!TOURNAMENT_CHAMPION;
+              const podium = tournamentOver && leagueTable.length >= 3 && leagueTable[0].played > 0
+                ? leagueTable.slice(0, 3)
+                : null;
               return (
                 <section className="bg-white rounded-2xl border border-[#E5E5EA] p-5 shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
-                  <h3 className="text-xs font-bold text-[#8E8E93] uppercase tracking-wider mb-1">🏅 Hall of Fame</h3>
-                  <p className="text-[11px] text-[#8E8E93] mb-4">Fun awards from across the tournament so far.</p>
+                  <h3 className="text-xs font-bold text-[#8E8E93] uppercase tracking-wider mb-1">
+                    🏅 Hall of Fame{tournamentOver ? ' — Final Honours' : ''}
+                  </h3>
+                  <p className="text-[11px] text-[#8E8E93] mb-4">
+                    {tournamentOver
+                      ? 'The tournament is done and dusted — the final podium and every award, settled across all 8 gameweeks.'
+                      : 'Fun awards from across the tournament so far.'}
+                  </p>
+                  {podium && (
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-4">
+                      {podium.map((row, i) => (
+                        <div key={row.name}
+                          className={`flex items-center gap-3 p-3 rounded-xl border ${i===0 ? 'border-[#FF9500]/40 bg-[#FF9500]/10' : 'border-[#E5E5EA] bg-[#F2F2F7]/40'}`}>
+                          <span className="text-2xl flex-shrink-0">{['🥇','🥈','🥉'][i]}</span>
+                          <div className="min-w-0 flex-1">
+                            <p className={`text-xs font-bold truncate ${row.name===currentUser ? 'text-[#007AFF]' : 'text-[#1C1C1E]'}`}>{row.name}</p>
+                            <p className="text-[10px] text-[#8E8E93] font-mono">{row.h2hPts} pts · {row.w}W {row.d}D {row.l}L</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                   {!awards ? (
                     <p className="text-xs text-[#8E8E93] italic">Awards unlock once the first gameweek has been scored.</p>
                   ) : (
@@ -1202,7 +1256,7 @@ export default function App() {
                                   <p className="text-[10px] text-[#8E8E93] font-mono">{winner.value} {def.suffix}</p>
                                 </>
                               ) : (
-                                <p className="text-[10px] text-[#AEAEB2] italic">TBD</p>
+                                <p className="text-[10px] text-[#AEAEB2] italic">{TOURNAMENT_CHAMPION ? 'Unclaimed' : 'TBD'}</p>
                               )}
                             </div>
                           </div>
