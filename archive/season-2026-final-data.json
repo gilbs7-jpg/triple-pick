@@ -1,0 +1,1932 @@
+{
+  "league": "Triple Pick League — World Cup 2026",
+  "archivedAt": "2026-07-27",
+  "source": "JSONBin bins 6a289e9dda38895dfea3718d (picks) + 6a29f4e7f5f4af5e29db9b7d (state), fetched at season end",
+  "champion": "Amelia Wood",
+  "finalTable": [
+    {
+      "name": "Amelia Wood",
+      "played": 8,
+      "w": 6,
+      "d": 0,
+      "l": 2,
+      "h2hPts": 22,
+      "totalScore": 54,
+      "winsSelected": 16
+    },
+    {
+      "name": "Lianne Conway",
+      "played": 8,
+      "w": 5,
+      "d": 1,
+      "l": 2,
+      "h2hPts": 22,
+      "totalScore": 35,
+      "winsSelected": 9
+    },
+    {
+      "name": "Richard Lee",
+      "played": 8,
+      "w": 3,
+      "d": 4,
+      "l": 1,
+      "h2hPts": 18,
+      "totalScore": 52,
+      "winsSelected": 15
+    },
+    {
+      "name": "Jamie Brown",
+      "played": 8,
+      "w": 3,
+      "d": 3,
+      "l": 2,
+      "h2hPts": 16,
+      "totalScore": 38,
+      "winsSelected": 11
+    },
+    {
+      "name": "Jona Moore",
+      "played": 8,
+      "w": 3,
+      "d": 3,
+      "l": 2,
+      "h2hPts": 16,
+      "totalScore": 33,
+      "winsSelected": 9
+    },
+    {
+      "name": "Kieran Smyth",
+      "played": 8,
+      "w": 3,
+      "d": 1,
+      "l": 4,
+      "h2hPts": 12,
+      "totalScore": 32,
+      "winsSelected": 9
+    },
+    {
+      "name": "Gemma D",
+      "played": 8,
+      "w": 3,
+      "d": 0,
+      "l": 5,
+      "h2hPts": 12,
+      "totalScore": 21,
+      "winsSelected": 5
+    },
+    {
+      "name": "Jason Gilbert",
+      "played": 8,
+      "w": 1,
+      "d": 4,
+      "l": 3,
+      "h2hPts": 11,
+      "totalScore": 33,
+      "winsSelected": 9
+    },
+    {
+      "name": "Mark Bentley",
+      "played": 8,
+      "w": 2,
+      "d": 2,
+      "l": 4,
+      "h2hPts": 11,
+      "totalScore": 32,
+      "winsSelected": 9
+    },
+    {
+      "name": "Adam Brand",
+      "played": 8,
+      "w": 0,
+      "d": 2,
+      "l": 6,
+      "h2hPts": 5,
+      "totalScore": 36,
+      "winsSelected": 10
+    }
+  ],
+  "playerPicks": {
+    "GW1": {
+      "Jason Gilbert": {
+        "picks": [
+          {
+            "name": "Scotland",
+            "flag": "🏴󠁧󠁢󠁳󠁣󠁴󠁿",
+            "id": "sco",
+            "isArmband": true
+          },
+          {
+            "name": "Czechia",
+            "flag": "🇨🇿",
+            "id": "cze",
+            "isArmband": false
+          },
+          {
+            "name": "Türkiye",
+            "flag": "🇹🇷",
+            "id": "tur",
+            "isArmband": false
+          }
+        ],
+        "timestamp": "2026-06-11T00:54:58.379Z"
+      },
+      "Jamie Brown": {
+        "picks": [
+          {
+            "name": "Scotland",
+            "flag": "🏴󠁧󠁢󠁳󠁣󠁴󠁿",
+            "id": "sco",
+            "isArmband": true
+          },
+          {
+            "name": "Germany",
+            "flag": "🇩🇪",
+            "id": "ger",
+            "isArmband": false
+          },
+          {
+            "name": "USA",
+            "flag": "🇺🇸",
+            "id": "usa",
+            "isArmband": false
+          }
+        ],
+        "timestamp": "2026-06-11T02:10:44.654Z"
+      },
+      "Kieran Smyth": {
+        "picks": [
+          {
+            "name": "Germany",
+            "flag": "🇩🇪",
+            "id": "ger",
+            "isArmband": false
+          },
+          {
+            "name": "Brazil",
+            "flag": "🇧🇷",
+            "id": "bra",
+            "isArmband": true
+          },
+          {
+            "name": "Netherlands",
+            "flag": "🇳🇱",
+            "id": "ned",
+            "isArmband": false
+          }
+        ],
+        "timestamp": "2026-06-11T04:11:23.861Z"
+      },
+      "Richard Lee": {
+        "picks": [
+          {
+            "name": "Scotland",
+            "flag": "🏴󠁧󠁢󠁳󠁣󠁴󠁿",
+            "id": "sco",
+            "isArmband": false
+          },
+          {
+            "name": "Germany",
+            "flag": "🇩🇪",
+            "id": "ger",
+            "isArmband": true
+          },
+          {
+            "name": "Sweden",
+            "flag": "🇸🇪",
+            "id": "swe",
+            "isArmband": false
+          }
+        ],
+        "timestamp": "2026-06-11T06:14:12.695Z"
+      },
+      "Amelia Wood": {
+        "picks": [
+          {
+            "name": "USA",
+            "flag": "🇺🇸",
+            "id": "usa",
+            "isArmband": false
+          },
+          {
+            "name": "Scotland",
+            "flag": "🏴󠁧󠁢󠁳󠁣󠁴󠁿",
+            "id": "sco",
+            "isArmband": false
+          },
+          {
+            "name": "Switzerland",
+            "flag": "🇨🇭",
+            "id": "sui",
+            "isArmband": true
+          }
+        ],
+        "timestamp": "2026-06-11T06:32:05.796Z"
+      },
+      "Lianne Conway": {
+        "picks": [
+          {
+            "name": "Mexico",
+            "flag": "🇲🇽",
+            "id": "mex",
+            "isArmband": true
+          },
+          {
+            "name": "Brazil",
+            "flag": "🇧🇷",
+            "id": "bra",
+            "isArmband": false
+          },
+          {
+            "name": "Scotland",
+            "flag": "🏴󠁧󠁢󠁳󠁣󠁴󠁿",
+            "id": "sco",
+            "isArmband": false
+          }
+        ],
+        "timestamp": "2026-06-11T07:01:44.884Z"
+      },
+      "Adam Brand": {
+        "picks": [
+          {
+            "name": "Scotland",
+            "flag": "🏴󠁧󠁢󠁳󠁣󠁴󠁿",
+            "id": "sco",
+            "isArmband": true
+          },
+          {
+            "name": "Türkiye",
+            "flag": "🇹🇷",
+            "id": "tur",
+            "isArmband": false
+          },
+          {
+            "name": "Mexico",
+            "flag": "🇲🇽",
+            "id": "mex",
+            "isArmband": false
+          }
+        ],
+        "timestamp": "2026-06-11T08:29:51.842Z"
+      },
+      "Gemma D": {
+        "picks": [
+          {
+            "name": "Mexico",
+            "flag": "🇲🇽",
+            "id": "mex",
+            "isArmband": false
+          },
+          {
+            "name": "Brazil",
+            "flag": "🇧🇷",
+            "id": "bra",
+            "isArmband": true
+          },
+          {
+            "name": "Japan",
+            "flag": "🇯🇵",
+            "id": "jpn",
+            "isArmband": false
+          }
+        ],
+        "timestamp": "2026-06-11T13:38:51.137Z"
+      },
+      "Jona Moore": {
+        "picks": [
+          {
+            "name": "Switzerland",
+            "flag": "🇨🇭",
+            "id": "sui",
+            "isArmband": true
+          },
+          {
+            "name": "Mexico",
+            "flag": "🇲🇽",
+            "id": "mex",
+            "isArmband": false
+          },
+          {
+            "name": "Scotland",
+            "flag": "🏴󠁧󠁢󠁳󠁣󠁴󠁿",
+            "id": "sco",
+            "isArmband": false
+          }
+        ],
+        "timestamp": "2026-06-11T14:03:26.448Z"
+      },
+      "Mark Bentley": {
+        "picks": [
+          {
+            "name": "Morocco",
+            "flag": "🇲🇦",
+            "id": "mar",
+            "isArmband": false
+          },
+          {
+            "name": "Ecuador",
+            "flag": "🇪🇨",
+            "id": "ecu",
+            "isArmband": false
+          },
+          {
+            "name": "Haiti",
+            "flag": "🇭🇹",
+            "id": "hai",
+            "isArmband": true
+          }
+        ],
+        "timestamp": "2026-06-11T15:35:01.915Z"
+      }
+    },
+    "GW2": {
+      "Kieran Smyth": {
+        "picks": [
+          {
+            "name": "France",
+            "flag": "🇫🇷",
+            "id": "fra",
+            "isArmband": true
+          },
+          {
+            "name": "Czechia",
+            "flag": "🇨🇿",
+            "id": "cze",
+            "isArmband": false
+          },
+          {
+            "name": "Japan",
+            "flag": "🇯🇵",
+            "id": "jpn",
+            "isArmband": false
+          }
+        ],
+        "timestamp": "2026-06-15T06:31:06.326Z"
+      },
+      "Gemma D": {
+        "picks": [
+          {
+            "name": "Portugal",
+            "flag": "🇵🇹",
+            "id": "por",
+            "isArmband": true
+          },
+          {
+            "name": "France",
+            "flag": "🇫🇷",
+            "id": "fra",
+            "isArmband": false
+          },
+          {
+            "name": "England",
+            "flag": "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
+            "id": "eng",
+            "isArmband": false
+          }
+        ],
+        "timestamp": "2026-06-15T08:01:26.415Z"
+      },
+      "Adam Brand": {
+        "picks": [
+          {
+            "name": "Uruguay",
+            "flag": "🇺🇾",
+            "id": "ury",
+            "isArmband": true
+          },
+          {
+            "name": "Ecuador",
+            "flag": "🇪🇨",
+            "id": "ecu",
+            "isArmband": false
+          },
+          {
+            "name": "Belgium",
+            "flag": "🇧🇪",
+            "id": "bel",
+            "isArmband": false
+          }
+        ],
+        "timestamp": "2026-06-15T08:06:57.159Z"
+      },
+      "Richard Lee": {
+        "picks": [
+          {
+            "name": "Brazil",
+            "flag": "🇧🇷",
+            "id": "bra",
+            "isArmband": false
+          },
+          {
+            "name": "Ecuador",
+            "flag": "🇪🇨",
+            "id": "ecu",
+            "isArmband": false
+          },
+          {
+            "name": "Belgium",
+            "flag": "🇧🇪",
+            "id": "bel",
+            "isArmband": true
+          }
+        ],
+        "timestamp": "2026-06-15T08:07:27.460Z"
+      },
+      "Amelia Wood": {
+        "picks": [
+          {
+            "name": "Canada",
+            "flag": "🇨🇦",
+            "id": "can",
+            "isArmband": false
+          },
+          {
+            "name": "Ecuador",
+            "flag": "🇪🇨",
+            "id": "ecu",
+            "isArmband": true
+          },
+          {
+            "name": "Croatia",
+            "flag": "🇭🇷",
+            "id": "cro",
+            "isArmband": false
+          }
+        ],
+        "timestamp": "2026-06-15T08:11:11.690Z"
+      },
+      "Lianne Conway": {
+        "picks": [
+          {
+            "name": "United States",
+            "flag": "🇺🇸",
+            "id": "usa",
+            "isArmband": true
+          },
+          {
+            "name": "Argentina",
+            "flag": "🇦🇷",
+            "id": "arg",
+            "isArmband": false
+          },
+          {
+            "name": "Portugal",
+            "flag": "🇵🇹",
+            "id": "por",
+            "isArmband": false
+          }
+        ],
+        "timestamp": "2026-06-15T21:12:12.218Z"
+      },
+      "Jamie Brown": {
+        "picks": [
+          {
+            "name": "Japan",
+            "flag": "🇯🇵",
+            "id": "jpn",
+            "isArmband": false
+          },
+          {
+            "name": "Ecuador",
+            "flag": "🇪🇨",
+            "id": "ecu",
+            "isArmband": true
+          },
+          {
+            "name": "Morocco",
+            "flag": "🇲🇦",
+            "id": "mar",
+            "isArmband": false
+          }
+        ],
+        "timestamp": "2026-06-17T17:04:57.809Z"
+      },
+      "Jason Gilbert": {
+        "picks": [
+          {
+            "name": "Portugal",
+            "flag": "🇵🇹",
+            "id": "por",
+            "isArmband": true
+          },
+          {
+            "name": "Belgium",
+            "flag": "🇧🇪",
+            "id": "bel",
+            "isArmband": false
+          },
+          {
+            "name": "Uruguay",
+            "flag": "🇺🇾",
+            "id": "ury",
+            "isArmband": false
+          }
+        ],
+        "timestamp": "2026-06-16T19:56:14.248Z"
+      },
+      "Mark Bentley": {
+        "picks": [
+          {
+            "name": "Cape Verde Islands",
+            "flag": "🇨🇻",
+            "id": "cpv",
+            "isArmband": true
+          },
+          {
+            "name": "Argentina",
+            "flag": "🇦🇷",
+            "id": "arg",
+            "isArmband": false
+          },
+          {
+            "name": "Morocco",
+            "flag": "🇲🇦",
+            "id": "mar",
+            "isArmband": false
+          }
+        ],
+        "timestamp": "2026-06-17T17:34:45.297Z"
+      },
+      "Jona Moore": {
+        "picks": [
+          {
+            "name": "Spain",
+            "flag": "🇪🇸",
+            "id": "esp",
+            "isArmband": false
+          },
+          {
+            "name": "Uruguay",
+            "flag": "🇺🇾",
+            "id": "ury",
+            "isArmband": false
+          },
+          {
+            "name": "Portugal",
+            "flag": "🇵🇹",
+            "id": "por",
+            "isArmband": true
+          }
+        ],
+        "timestamp": "2026-06-18T12:11:38.709Z"
+      }
+    },
+    "GW3": {
+      "Kieran Smyth": {
+        "picks": [
+          {
+            "name": "Morocco",
+            "flag": "🇲🇦",
+            "id": "mar",
+            "isArmband": false
+          },
+          {
+            "name": "Ivory Coast",
+            "flag": "🇨🇮",
+            "id": "civ",
+            "isArmband": true
+          },
+          {
+            "name": "Senegal",
+            "flag": "🇸🇳",
+            "id": "sen",
+            "isArmband": false
+          }
+        ],
+        "timestamp": "2026-06-20T22:10:36.758Z"
+      },
+      "Lianne Conway": {
+        "picks": [
+          {
+            "name": "Morocco",
+            "flag": "🇲🇦",
+            "id": "mar",
+            "isArmband": true
+          },
+          {
+            "name": "Germany",
+            "flag": "🇩🇪",
+            "id": "ger",
+            "isArmband": false
+          },
+          {
+            "name": "Japan",
+            "flag": "🇯🇵",
+            "id": "jpn",
+            "isArmband": false
+          }
+        ],
+        "timestamp": "2026-06-22T08:57:13.108Z"
+      },
+      "Jamie Brown": {
+        "picks": [
+          {
+            "name": "Netherlands",
+            "flag": "🇳🇱",
+            "id": "ned",
+            "isArmband": false
+          },
+          {
+            "name": "Belgium",
+            "flag": "🇧🇪",
+            "id": "bel",
+            "isArmband": true
+          },
+          {
+            "name": "South Korea",
+            "flag": "🇰🇷",
+            "id": "kor",
+            "isArmband": false
+          }
+        ],
+        "timestamp": "2026-06-22T18:58:01.152Z"
+      },
+      "Jason Gilbert": {
+        "picks": [
+          {
+            "name": "England",
+            "flag": "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
+            "id": "eng",
+            "isArmband": false
+          },
+          {
+            "name": "United States",
+            "flag": "🇺🇸",
+            "id": "usa",
+            "isArmband": true
+          },
+          {
+            "name": "Senegal",
+            "flag": "🇸🇳",
+            "id": "sen",
+            "isArmband": false
+          }
+        ],
+        "timestamp": "2026-06-23T03:49:37.993Z"
+      },
+      "Amelia Wood": {
+        "picks": [
+          {
+            "name": "Ivory Coast",
+            "flag": "🇨🇮",
+            "id": "civ",
+            "isArmband": false
+          },
+          {
+            "name": "Netherlands",
+            "flag": "🇳🇱",
+            "id": "ned",
+            "isArmband": true
+          },
+          {
+            "name": "Morocco",
+            "flag": "🇲🇦",
+            "id": "mar",
+            "isArmband": false
+          }
+        ],
+        "timestamp": "2026-06-24T08:05:15.417Z"
+      },
+      "Richard Lee": {
+        "picks": [
+          {
+            "name": "Ivory Coast",
+            "flag": "🇨🇮",
+            "id": "civ",
+            "isArmband": false
+          },
+          {
+            "name": "England",
+            "flag": "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
+            "id": "eng",
+            "isArmband": true
+          },
+          {
+            "name": "Morocco",
+            "flag": "🇲🇦",
+            "id": "mar",
+            "isArmband": false
+          }
+        ],
+        "timestamp": "2026-06-24T12:21:22.088Z"
+      },
+      "Adam Brand": {
+        "picks": [
+          {
+            "name": "Morocco",
+            "flag": "🇲🇦",
+            "id": "mar",
+            "isArmband": true
+          },
+          {
+            "name": "England",
+            "flag": "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
+            "id": "eng",
+            "isArmband": false
+          },
+          {
+            "name": "South Korea",
+            "flag": "🇰🇷",
+            "id": "kor",
+            "isArmband": false
+          }
+        ],
+        "timestamp": "2026-06-24T16:52:54.038Z"
+      }
+    },
+    "GW4": {
+      "Jamie Brown": {
+        "picks": [
+          {
+            "name": "United States",
+            "flag": "🇺🇸",
+            "id": "usa",
+            "isArmband": false
+          },
+          {
+            "name": "Spain",
+            "flag": "🇪🇸",
+            "id": "esp",
+            "isArmband": true
+          },
+          {
+            "name": "Brazil",
+            "flag": "🇧🇷",
+            "id": "bra",
+            "isArmband": false
+          }
+        ],
+        "timestamp": "2026-06-28T08:49:53.825Z"
+      },
+      "Kieran Smyth": {
+        "picks": [
+          {
+            "name": "Mexico",
+            "flag": "🇲🇽",
+            "id": "mex",
+            "isArmband": false
+          },
+          {
+            "name": "England",
+            "flag": "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
+            "id": "eng",
+            "isArmband": false
+          },
+          {
+            "name": "Argentina",
+            "flag": "🇦🇷",
+            "id": "arg",
+            "isArmband": true
+          }
+        ],
+        "timestamp": "2026-06-28T08:14:16.427Z"
+      },
+      "Amelia Wood": {
+        "picks": [
+          {
+            "name": "Belgium",
+            "flag": "🇧🇪",
+            "id": "bel",
+            "isArmband": false
+          },
+          {
+            "name": "United States",
+            "flag": "🇺🇸",
+            "id": "usa",
+            "isArmband": true
+          },
+          {
+            "name": "Colombia",
+            "flag": "🇨🇴",
+            "id": "col",
+            "isArmband": false
+          }
+        ],
+        "timestamp": "2026-06-28T08:19:33.580Z"
+      },
+      "Gemma D": {
+        "picks": [
+          {
+            "name": "Argentina",
+            "flag": "🇦🇷",
+            "id": "arg",
+            "isArmband": true
+          },
+          {
+            "name": "France",
+            "flag": "🇫🇷",
+            "id": "fra",
+            "isArmband": false
+          },
+          {
+            "name": "Germany",
+            "flag": "🇩🇪",
+            "id": "ger",
+            "isArmband": false
+          }
+        ],
+        "timestamp": "2026-06-28T08:26:53.565Z"
+      },
+      "Richard Lee": {
+        "picks": [
+          {
+            "name": "Mexico",
+            "flag": "🇲🇽",
+            "id": "mex",
+            "isArmband": false
+          },
+          {
+            "name": "Switzerland",
+            "flag": "🇨🇭",
+            "id": "sui",
+            "isArmband": false
+          },
+          {
+            "name": "Argentina",
+            "flag": "🇦🇷",
+            "id": "arg",
+            "isArmband": true
+          }
+        ],
+        "timestamp": "2026-06-28T08:27:36.553Z"
+      },
+      "Lianne Conway": {
+        "picks": [
+          {
+            "name": "France",
+            "flag": "🇫🇷",
+            "id": "fra",
+            "isArmband": true
+          },
+          {
+            "name": "England",
+            "flag": "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
+            "id": "eng",
+            "isArmband": false
+          },
+          {
+            "name": "Spain",
+            "flag": "🇪🇸",
+            "id": "esp",
+            "isArmband": false
+          }
+        ],
+        "timestamp": "2026-06-28T08:36:31.804Z"
+      },
+      "Jason Gilbert": {
+        "picks": [
+          {
+            "name": "Brazil",
+            "flag": "🇧🇷",
+            "id": "bra",
+            "isArmband": false
+          },
+          {
+            "name": "United States",
+            "flag": "🇺🇸",
+            "id": "usa",
+            "isArmband": false
+          },
+          {
+            "name": "Spain",
+            "flag": "🇪🇸",
+            "id": "esp",
+            "isArmband": true
+          }
+        ],
+        "timestamp": "2026-06-28T08:51:28.403Z"
+      },
+      "Mark Bentley": {
+        "picks": [
+          {
+            "name": "Argentina",
+            "flag": "🇦🇷",
+            "id": "arg",
+            "isArmband": true
+          },
+          {
+            "name": "Spain",
+            "flag": "🇪🇸",
+            "id": "esp",
+            "isArmband": false
+          },
+          {
+            "name": "United States",
+            "flag": "🇺🇸",
+            "id": "usa",
+            "isArmband": false
+          }
+        ],
+        "timestamp": "2026-06-28T12:12:43.970Z"
+      },
+      "Jona Moore": {
+        "picks": [
+          {
+            "name": "Germany",
+            "flag": "🇩🇪",
+            "id": "ger",
+            "isArmband": true
+          },
+          {
+            "name": "Senegal",
+            "flag": "🇸🇳",
+            "id": "sen",
+            "isArmband": false
+          },
+          {
+            "name": "Colombia",
+            "flag": "🇨🇴",
+            "id": "col",
+            "isArmband": false
+          }
+        ],
+        "timestamp": "2026-06-28T12:20:00.815Z"
+      },
+      "Adam Brand": {
+        "picks": [
+          {
+            "name": "Germany",
+            "flag": "🇩🇪",
+            "id": "ger",
+            "isArmband": true
+          },
+          {
+            "name": "United States",
+            "flag": "🇺🇸",
+            "id": "usa",
+            "isArmband": false
+          },
+          {
+            "name": "Spain",
+            "flag": "🇪🇸",
+            "id": "esp",
+            "isArmband": false
+          }
+        ],
+        "timestamp": "2026-06-28T13:31:11.849Z"
+      }
+    },
+    "GW5": {
+      "Jason Gilbert": {
+        "picks": [
+          {
+            "name": "France",
+            "flag": "🇫🇷",
+            "id": "fra",
+            "isArmband": true
+          },
+          {
+            "name": "Argentina",
+            "flag": "🇦🇷",
+            "id": "arg",
+            "isArmband": false
+          },
+          {
+            "name": "Switzerland",
+            "flag": "🇨🇭",
+            "id": "sui",
+            "isArmband": false
+          }
+        ],
+        "timestamp": "2026-07-04T06:27:25.932Z"
+      },
+      "Richard Lee": {
+        "picks": [
+          {
+            "name": "France",
+            "flag": "🇫🇷",
+            "id": "fra",
+            "isArmband": true
+          },
+          {
+            "name": "Morocco",
+            "flag": "🇲🇦",
+            "id": "mar",
+            "isArmband": false
+          },
+          {
+            "name": "United States",
+            "flag": "🇺🇸",
+            "id": "usa",
+            "isArmband": false
+          }
+        ],
+        "timestamp": "2026-07-04T06:49:56.878Z"
+      },
+      "Kieran Smyth": {
+        "picks": [
+          {
+            "name": "Spain",
+            "flag": "🇪🇸",
+            "id": "esp",
+            "isArmband": false
+          },
+          {
+            "name": "United States",
+            "flag": "🇺🇸",
+            "id": "usa",
+            "isArmband": false
+          },
+          {
+            "name": "Colombia",
+            "flag": "🇨🇴",
+            "id": "col",
+            "isArmband": true
+          }
+        ],
+        "timestamp": "2026-07-04T07:16:46.620Z"
+      },
+      "Jamie Brown": {
+        "picks": [
+          {
+            "name": "Morocco",
+            "flag": "🇲🇦",
+            "id": "mar",
+            "isArmband": true
+          },
+          {
+            "name": "Colombia",
+            "flag": "🇨🇴",
+            "id": "col",
+            "isArmband": false
+          },
+          {
+            "name": "Mexico",
+            "flag": "🇲🇽",
+            "id": "mex",
+            "isArmband": false
+          }
+        ],
+        "timestamp": "2026-07-04T07:39:05.965Z"
+      },
+      "Adam Brand": {
+        "picks": [
+          {
+            "name": "France",
+            "flag": "🇫🇷",
+            "id": "fra",
+            "isArmband": true
+          },
+          {
+            "name": "Morocco",
+            "flag": "🇲🇦",
+            "id": "mar",
+            "isArmband": false
+          },
+          {
+            "name": "Argentina",
+            "flag": "🇦🇷",
+            "id": "arg",
+            "isArmband": false
+          }
+        ],
+        "timestamp": "2026-07-04T07:39:25.303Z"
+      },
+      "Amelia Wood": {
+        "picks": [
+          {
+            "name": "Belgium",
+            "flag": "🇧🇪",
+            "id": "bel",
+            "isArmband": false
+          },
+          {
+            "name": "Brazil",
+            "flag": "🇧🇷",
+            "id": "bra",
+            "isArmband": true
+          },
+          {
+            "name": "Switzerland",
+            "flag": "🇨🇭",
+            "id": "sui",
+            "isArmband": false
+          }
+        ],
+        "timestamp": "2026-07-04T07:48:43.775Z"
+      },
+      "Lianne Conway": {
+        "picks": [
+          {
+            "name": "Colombia",
+            "flag": "🇨🇴",
+            "id": "col",
+            "isArmband": false
+          },
+          {
+            "name": "United States",
+            "flag": "🇺🇸",
+            "id": "usa",
+            "isArmband": false
+          },
+          {
+            "name": "Argentina",
+            "flag": "🇦🇷",
+            "id": "arg",
+            "isArmband": true
+          }
+        ],
+        "timestamp": "2026-07-04T11:15:41.353Z"
+      },
+      "Jona Moore": {
+        "picks": [
+          {
+            "name": "France",
+            "flag": "🇫🇷",
+            "id": "fra",
+            "isArmband": true
+          },
+          {
+            "name": "Argentina",
+            "flag": "🇦🇷",
+            "id": "arg",
+            "isArmband": false
+          },
+          {
+            "name": "Colombia",
+            "flag": "🇨🇴",
+            "id": "col",
+            "isArmband": false
+          }
+        ],
+        "timestamp": "2026-07-04T11:16:26.007Z"
+      },
+      "Gemma D": {
+        "picks": [
+          {
+            "name": "Argentina",
+            "flag": "🇦🇷",
+            "id": "arg",
+            "isArmband": true
+          },
+          {
+            "name": "Brazil",
+            "flag": "🇧🇷",
+            "id": "bra",
+            "isArmband": false
+          },
+          {
+            "name": "Colombia",
+            "flag": "🇨🇴",
+            "id": "col",
+            "isArmband": false
+          }
+        ],
+        "timestamp": "2026-07-04T11:49:08.304Z"
+      },
+      "Mark Bentley": {
+        "picks": [
+          {
+            "name": "France",
+            "flag": "🇫🇷",
+            "id": "fra",
+            "isArmband": true
+          },
+          {
+            "name": "Spain",
+            "flag": "🇪🇸",
+            "id": "esp",
+            "isArmband": false
+          },
+          {
+            "name": "Colombia",
+            "flag": "🇨🇴",
+            "id": "col",
+            "isArmband": false
+          }
+        ],
+        "timestamp": "2026-07-04T13:42:19.108Z"
+      }
+    },
+    "GW6": {
+      "Richard Lee": {
+        "picks": [
+          {
+            "name": "France",
+            "flag": "🇫🇷",
+            "id": "fra",
+            "isArmband": true
+          },
+          {
+            "name": "Belgium",
+            "flag": "🇧🇪",
+            "id": "bel",
+            "isArmband": false
+          },
+          {
+            "name": "Argentina",
+            "flag": "🇦🇷",
+            "id": "arg",
+            "isArmband": false
+          }
+        ],
+        "timestamp": "2026-07-08T07:26:55.696Z"
+      },
+      "Gemma D": {
+        "picks": [
+          {
+            "name": "Spain",
+            "flag": "🇪🇸",
+            "id": "esp",
+            "isArmband": true
+          },
+          {
+            "name": "England",
+            "flag": "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
+            "id": "eng",
+            "isArmband": false
+          },
+          {
+            "name": "Switzerland",
+            "flag": "🇨🇭",
+            "id": "sui",
+            "isArmband": false
+          }
+        ],
+        "timestamp": "2026-07-08T07:28:44.016Z"
+      },
+      "Jason Gilbert": {
+        "picks": [
+          {
+            "name": "Morocco",
+            "flag": "🇲🇦",
+            "id": "mar",
+            "isArmband": false
+          },
+          {
+            "name": "Norway",
+            "flag": "🇳🇴",
+            "id": "nor",
+            "isArmband": true
+          },
+          {
+            "name": "Switzerland",
+            "flag": "🇨🇭",
+            "id": "sui",
+            "isArmband": false
+          }
+        ],
+        "timestamp": "2026-07-08T07:30:42.359Z"
+      },
+      "Kieran Smyth": {
+        "picks": [
+          {
+            "name": "Norway",
+            "flag": "🇳🇴",
+            "id": "nor",
+            "isArmband": false
+          },
+          {
+            "name": "Argentina",
+            "flag": "🇦🇷",
+            "id": "arg",
+            "isArmband": true
+          },
+          {
+            "name": "Belgium",
+            "flag": "🇧🇪",
+            "id": "bel",
+            "isArmband": false
+          }
+        ],
+        "timestamp": "2026-07-08T08:35:07.785Z"
+      },
+      "Adam Brand": {
+        "picks": [
+          {
+            "name": "France",
+            "flag": "🇫🇷",
+            "id": "fra",
+            "isArmband": false
+          },
+          {
+            "name": "Spain",
+            "flag": "🇪🇸",
+            "id": "esp",
+            "isArmband": true
+          },
+          {
+            "name": "Argentina",
+            "flag": "🇦🇷",
+            "id": "arg",
+            "isArmband": false
+          }
+        ],
+        "timestamp": "2026-07-08T12:13:49.703Z"
+      },
+      "Mark Bentley": {
+        "picks": [
+          {
+            "name": "England",
+            "flag": "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
+            "id": "eng",
+            "isArmband": true
+          },
+          {
+            "name": "Belgium",
+            "flag": "🇧🇪",
+            "id": "bel",
+            "isArmband": false
+          },
+          {
+            "name": "France",
+            "flag": "🇫🇷",
+            "id": "fra",
+            "isArmband": false
+          }
+        ],
+        "timestamp": "2026-07-08T14:58:39.161Z"
+      },
+      "Amelia Wood": {
+        "picks": [
+          {
+            "name": "Morocco",
+            "flag": "🇲🇦",
+            "id": "mar",
+            "isArmband": false
+          },
+          {
+            "name": "Spain",
+            "flag": "🇪🇸",
+            "id": "esp",
+            "isArmband": true
+          },
+          {
+            "name": "Argentina",
+            "flag": "🇦🇷",
+            "id": "arg",
+            "isArmband": false
+          }
+        ],
+        "timestamp": "2026-07-08T15:55:06.161Z"
+      },
+      "Lianne Conway": {
+        "picks": [
+          {
+            "name": "France",
+            "flag": "🇫🇷",
+            "id": "fra",
+            "isArmband": true
+          },
+          {
+            "name": "Belgium",
+            "flag": "🇧🇪",
+            "id": "bel",
+            "isArmband": false
+          },
+          {
+            "name": "Switzerland",
+            "flag": "🇨🇭",
+            "id": "sui",
+            "isArmband": false
+          }
+        ],
+        "timestamp": "2026-07-08T17:38:47.916Z"
+      },
+      "Jona Moore": {
+        "picks": [
+          {
+            "name": "France",
+            "flag": "🇫🇷",
+            "id": "fra",
+            "isArmband": true
+          },
+          {
+            "name": "Norway",
+            "flag": "🇳🇴",
+            "id": "nor",
+            "isArmband": false
+          },
+          {
+            "name": "Argentina",
+            "flag": "🇦🇷",
+            "id": "arg",
+            "isArmband": false
+          }
+        ],
+        "timestamp": "2026-07-09T15:28:19.041Z"
+      }
+    },
+    "GW7": {
+      "Kieran Smyth": {
+        "picks": [
+          {
+            "name": "England",
+            "flag": "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
+            "id": "eng",
+            "isArmband": true
+          },
+          {
+            "name": "Spain",
+            "flag": "🇪🇸",
+            "id": "esp",
+            "isArmband": false
+          }
+        ],
+        "timestamp": "2026-07-12T08:22:41.270Z"
+      },
+      "Jason Gilbert": {
+        "picks": [
+          {
+            "name": "France",
+            "flag": "🇫🇷",
+            "id": "fra",
+            "isArmband": true
+          },
+          {
+            "name": "England",
+            "flag": "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
+            "id": "eng",
+            "isArmband": false
+          }
+        ],
+        "timestamp": "2026-07-12T08:26:11.217Z"
+      },
+      "Gemma D": {
+        "picks": [
+          {
+            "name": "Spain",
+            "flag": "🇪🇸",
+            "id": "esp",
+            "isArmband": true
+          },
+          {
+            "name": "Argentina",
+            "flag": "🇦🇷",
+            "id": "arg",
+            "isArmband": false
+          }
+        ],
+        "timestamp": "2026-07-12T08:36:10.609Z"
+      },
+      "Jamie Brown": {
+        "picks": [
+          {
+            "name": "France",
+            "flag": "🇫🇷",
+            "id": "fra",
+            "isArmband": true
+          },
+          {
+            "name": "England",
+            "flag": "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
+            "id": "eng",
+            "isArmband": false
+          }
+        ],
+        "timestamp": "2026-07-12T09:05:27.035Z"
+      },
+      "Jona Moore": {
+        "picks": [
+          {
+            "name": "England",
+            "flag": "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
+            "id": "eng",
+            "isArmband": true
+          },
+          {
+            "name": "Spain",
+            "flag": "🇪🇸",
+            "id": "esp",
+            "isArmband": false
+          }
+        ],
+        "timestamp": "2026-07-12T09:25:00.380Z"
+      },
+      "Amelia Wood": {
+        "picks": [
+          {
+            "name": "France",
+            "flag": "🇫🇷",
+            "id": "fra",
+            "isArmband": true
+          },
+          {
+            "name": "England",
+            "flag": "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
+            "id": "eng",
+            "isArmband": false
+          }
+        ],
+        "timestamp": "2026-07-13T06:39:32.016Z"
+      },
+      "Adam Brand": {
+        "picks": [
+          {
+            "name": "England",
+            "flag": "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
+            "id": "eng",
+            "isArmband": true
+          },
+          {
+            "name": "Spain",
+            "flag": "🇪🇸",
+            "id": "esp",
+            "isArmband": false
+          }
+        ],
+        "timestamp": "2026-07-13T12:19:26.587Z"
+      },
+      "Richard Lee": {
+        "picks": [
+          {
+            "name": "Spain",
+            "flag": "🇪🇸",
+            "id": "esp",
+            "isArmband": false
+          },
+          {
+            "name": "England",
+            "flag": "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
+            "id": "eng",
+            "isArmband": true
+          }
+        ],
+        "timestamp": "2026-07-13T13:06:49.907Z"
+      },
+      "Lianne Conway": {
+        "picks": [
+          {
+            "name": "England",
+            "flag": "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
+            "id": "eng",
+            "isArmband": true
+          },
+          {
+            "name": "Spain",
+            "flag": "🇪🇸",
+            "id": "esp",
+            "isArmband": false
+          }
+        ],
+        "timestamp": "2026-07-13T15:54:50.706Z"
+      }
+    },
+    "GW8": {
+      "Jamie Brown": {
+        "picks": [
+          {
+            "name": "France",
+            "flag": "🇫🇷",
+            "id": "fra",
+            "isArmband": false
+          },
+          {
+            "name": "Argentina",
+            "flag": "🇦🇷",
+            "id": "arg",
+            "isArmband": true
+          }
+        ],
+        "timestamp": "2026-07-16T09:11:56.066Z"
+      },
+      "Kieran Smyth": {
+        "picks": [
+          {
+            "name": "England",
+            "flag": "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
+            "id": "eng",
+            "isArmband": true
+          },
+          {
+            "name": "Argentina",
+            "flag": "🇦🇷",
+            "id": "arg",
+            "isArmband": false
+          }
+        ],
+        "timestamp": "2026-07-16T09:25:58.613Z"
+      },
+      "Jason Gilbert": {
+        "picks": [
+          {
+            "name": "Argentina",
+            "flag": "🇦🇷",
+            "id": "arg",
+            "isArmband": true
+          },
+          {
+            "name": "England",
+            "flag": "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
+            "id": "eng",
+            "isArmband": false
+          }
+        ],
+        "timestamp": "2026-07-16T18:05:53.526Z"
+      },
+      "Lianne Conway": {
+        "picks": [
+          {
+            "name": "Spain",
+            "flag": "🇪🇸",
+            "id": "esp",
+            "isArmband": true
+          },
+          {
+            "name": "England",
+            "flag": "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
+            "id": "eng",
+            "isArmband": false
+          }
+        ],
+        "timestamp": "2026-07-16T19:12:45.367Z"
+      },
+      "Amelia Wood": {
+        "picks": [
+          {
+            "name": "England",
+            "flag": "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
+            "id": "eng",
+            "isArmband": false
+          },
+          {
+            "name": "Spain",
+            "flag": "🇪🇸",
+            "id": "esp",
+            "isArmband": true
+          }
+        ],
+        "timestamp": "2026-07-17T08:30:17.466Z"
+      },
+      "Gemma D": {
+        "picks": [
+          {
+            "name": "France",
+            "flag": "🇫🇷",
+            "id": "fra",
+            "isArmband": true
+          },
+          {
+            "name": "Argentina",
+            "flag": "🇦🇷",
+            "id": "arg",
+            "isArmband": false
+          }
+        ],
+        "timestamp": "2026-07-17T08:32:40.684Z"
+      },
+      "Richard Lee": {
+        "picks": [
+          {
+            "name": "Spain",
+            "flag": "🇪🇸",
+            "id": "esp",
+            "isArmband": true
+          },
+          {
+            "name": "England",
+            "flag": "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
+            "id": "eng",
+            "isArmband": false
+          }
+        ],
+        "timestamp": "2026-07-17T08:33:09.264Z"
+      },
+      "Jona Moore": {
+        "picks": [
+          {
+            "name": "England",
+            "flag": "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
+            "id": "eng",
+            "isArmband": true
+          },
+          {
+            "name": "Spain",
+            "flag": "🇪🇸",
+            "id": "esp",
+            "isArmband": false
+          }
+        ],
+        "timestamp": "2026-07-17T10:01:15.497Z"
+      }
+    }
+  },
+  "results": {
+    "GW1": {
+      "mex": "W",
+      "rsa": "L",
+      "kor": "W",
+      "cze": "L",
+      "can": "D",
+      "bih": "D",
+      "usa": "W",
+      "par": "L",
+      "qat": "D",
+      "sui": "D",
+      "bra": "D",
+      "mar": "D",
+      "hai": "L",
+      "sco": "W",
+      "aus": "W",
+      "tur": "L",
+      "ger": "W",
+      "cuw": "L",
+      "ned": "D",
+      "jpn": "D",
+      "civ": "W",
+      "ecu": "L",
+      "swe": "W",
+      "tun": "L",
+      "esp": "D",
+      "cpv": "D",
+      "bel": "D",
+      "egy": "D",
+      "cur": "L",
+      "ksa": "D",
+      "ury": "D",
+      "irn": "D",
+      "nzl": "D",
+      "fra": "W",
+      "sen": "L",
+      "irq": "L",
+      "nor": "W",
+      "arg": "W",
+      "alg": "L",
+      "aut": "W",
+      "jor": "L",
+      "por": "D",
+      "cod": "D",
+      "eng": "W",
+      "cro": "L",
+      "gha": "W",
+      "pan": "L",
+      "uzb": "L",
+      "col": "W"
+    },
+    "GW2": {
+      "cze": "D",
+      "rsa": "D",
+      "sui": "W",
+      "bih": "L",
+      "can": "W",
+      "qat": "L",
+      "mex": "W",
+      "kor": "L",
+      "usa": "W",
+      "aus": "L",
+      "sco": "L",
+      "mar": "W",
+      "bra": "W",
+      "hai": "L",
+      "tur": "L",
+      "par": "W",
+      "ned": "W",
+      "swe": "L",
+      "ger": "W",
+      "civ": "L",
+      "ecu": "D",
+      "cuw": "D",
+      "tun": "L",
+      "jpn": "W",
+      "esp": "W",
+      "ksa": "L",
+      "bel": "D",
+      "irn": "D",
+      "ury": "D",
+      "cpv": "D",
+      "nzl": "L",
+      "egy": "W",
+      "uru": "D",
+      "arg": "W",
+      "aut": "L",
+      "fra": "W",
+      "irq": "L",
+      "nor": "W",
+      "sen": "L",
+      "jor": "L",
+      "alg": "W",
+      "por": "W",
+      "uzb": "L",
+      "eng": "D",
+      "gha": "D",
+      "pan": "L",
+      "cro": "W",
+      "col": "W",
+      "cod": "L",
+      "cur": "D"
+    },
+    "GW3": {
+      "sui": "W",
+      "can": "L",
+      "bih": "W",
+      "qat": "L",
+      "mar": "W",
+      "hai": "L",
+      "sco": "L",
+      "bra": "W",
+      "cze": "L",
+      "mex": "W",
+      "rsa": "W",
+      "kor": "L",
+      "ecu": "W",
+      "ger": "L",
+      "cuw": "L",
+      "civ": "W",
+      "tun": "L",
+      "ned": "W",
+      "jpn": "D",
+      "swe": "D",
+      "tur": "W",
+      "usa": "L",
+      "par": "D",
+      "aus": "D",
+      "nor": "L",
+      "fra": "W",
+      "sen": "W",
+      "irq": "L",
+      "uru": "L",
+      "esp": "W",
+      "cpv": "D",
+      "ksa": "D",
+      "nzl": "L",
+      "bel": "W",
+      "egy": "D",
+      "irn": "D",
+      "pan": "L",
+      "eng": "W",
+      "cro": "W",
+      "gha": "L",
+      "col": "D",
+      "por": "D",
+      "cod": "W",
+      "uzb": "L",
+      "jor": "L",
+      "arg": "W",
+      "alg": "D",
+      "aut": "D"
+    },
+    "GW4": {
+      "rsa": "L",
+      "can": "W",
+      "bra": "W",
+      "jpn": "L",
+      "ger": "L",
+      "par": "W",
+      "ned": "L",
+      "mar": "W",
+      "civ": "L",
+      "nor": "W",
+      "fra": "W",
+      "swe": "L",
+      "mex": "W",
+      "ecu": "L",
+      "eng": "W",
+      "cod": "L",
+      "bel": "W",
+      "sen": "L",
+      "usa": "W",
+      "bih": "L",
+      "esp": "W",
+      "aut": "L",
+      "por": "W",
+      "cro": "L",
+      "sui": "W",
+      "alg": "L",
+      "aus": "L",
+      "egy": "W",
+      "arg": "W",
+      "cpv": "L",
+      "col": "W",
+      "gha": "L"
+    },
+    "GW5": {
+      "can": "L",
+      "mar": "W",
+      "par": "L",
+      "fra": "W",
+      "bra": "L",
+      "nor": "W",
+      "mex": "L",
+      "eng": "W",
+      "por": "L",
+      "esp": "W",
+      "usa": "L",
+      "bel": "W",
+      "arg": "W",
+      "egy": "L",
+      "sui": "W",
+      "col": "L"
+    },
+    "GW6": {
+      "fra": "W",
+      "mar": "L",
+      "esp": "W",
+      "bel": "L",
+      "nor": "L",
+      "eng": "W",
+      "arg": "W",
+      "sui": "L"
+    },
+    "GW7": {
+      "fra": "L",
+      "esp": "W",
+      "eng": "L",
+      "arg": "W"
+    },
+    "GW8": {
+      "fra": "L",
+      "eng": "W",
+      "esp": "W",
+      "arg": "L"
+    }
+  }
+}
